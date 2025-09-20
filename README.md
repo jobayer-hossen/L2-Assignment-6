@@ -2,20 +2,6 @@
 
 A **production-grade**, fully responsive, and role-based ride booking platform built with **React, Redux Toolkit, RTK Query, and TypeScript**. This frontend application delivers tailored experiences for **Riders**, **Drivers**, and **Admins** with professional UI/UX design and seamless integration with the backend API.
 
-## 🌐 Live Demo
-
-| Platform | Link |
-|----------|------|
-| **Frontend Deployment** | [Ride Sharing Frontend](https://ride-sharing-frontend.vercel.app) |
-| **Backend API** | [Ride Sharing Backend](https://ride-sharing-backend-seven.vercel.app) |
-
-## 📂 Repository Links
-
-| Repository | Link |
-|------------|------|
-| **Frontend** | [GitHub Repository](https://github.com/naeemul-online/ride-sharing-frontend.git) |
-| **Backend** | [GitHub Repository](https://github.com/naeemul-online/ride-booking-app-backend.git) |
-
 ## 🔐 Test Credentials
 
 ### Admin Account
