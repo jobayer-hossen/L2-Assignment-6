@@ -4,7 +4,7 @@ export const ridersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     rideRequest: builder.mutation({
       query: (rideRequestInfo) => ({
-        url: "rides/request",
+        url: "rides/request-ride",
         method: "POST",
         data: rideRequestInfo,
       }),
@@ -21,7 +21,7 @@ export const ridersApi = baseApi.injectEndpoints({
 
     getRideHistory: builder.query({
       query: () => ({
-        url: "/rides/history",
+        url: "/rides/all-ride-riders",
         method: "GET",
       }),
       providesTags: ["RIDER"],

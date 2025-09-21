@@ -43,6 +43,14 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["RIDE"],
     }),
 
+    viewRideDetails: builder.query({
+      query: (id) => ({
+        url: `/rides/my-ride/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["RIDE"],
+    }),
+
     updateUserStatus: builder.mutation({
       query: ({ id, isActive }) => ({
         url: `/users/${id}`,
@@ -87,6 +95,7 @@ export const {
   useAllRidesQuery,
   useUpdateRideStatusMutation,
   useDeleteUserMutation,
+  useViewRideDetailsQuery,
   useUpdateUserStatusMutation,
   useAllDriversQuery,
   useUpdateDriverApprovalStatusMutation,

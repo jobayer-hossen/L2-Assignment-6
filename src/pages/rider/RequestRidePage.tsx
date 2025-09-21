@@ -1,228 +1,211 @@
-import ConfirmModal from "@/components/ConfirmModal";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { useRideRequestMutation } from "@/redux/features/ride/riders.api";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { DollarSign, MapPin, Navigation } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import axios from "axios";
 import { toast } from "sonner";
-import z from "zod";
 
-// Define your schema
-const formSchema = z.object({
-  pickup: z.object({
-    address: z.string().min(1, { message: "Pickup location is required." }),
-    coordinates: z.object({
-      lat: z.number().min(-90).max(90, { message: "Invalid latitude" }), // Ensuring lat is within the range
-      lng: z.number().min(-180).max(180, { message: "Invalid longitude" }), // Ensuring lng is within the range
-    }),
+// Zod Schema (frontend validation aligned with backend)
+const createRideZodSchema = z.object({
+  riderId: z.string().min(1, { message: "Rider id required" }),
+  vehicleType: z.string().min(1, { message: "Vehicle type required" }),
+  pickupLocation: z.object({
+    lati: z.number().min(-90).max(90),
+    long: z.number().min(-180).max(180),
+    address: z.string().min(1, { message: "Pickup address required" }),
   }),
   destination: z.object({
-    address: z.string().min(1, { message: "Destination is required." }),
-    coordinates: z.object({
-      lat: z.number().min(-90).max(90, { message: "Invalid latitude" }), // Ensuring lat is within the range
-      lng: z.number().min(-180).max(180, { message: "Invalid longitude" }), // Ensuring lng is within the range
-    }),
+    lati: z.number().min(-90).max(90),
+    long: z.number().min(-180).max(180),
+    address: z.string().min(1, { message: "Destination required" }),
   }),
 });
 
-type FormData = z.infer<typeof formSchema>;
-
-const RideBooking = () => {
-  const [rideRequest] = useRideRequestMutation();
-  const [fareEstimate, setFareEstimate] = useState(0);
-
-  const navigate = useNavigate();
-
-  // Use the schema type to ensure type safety
-  const tripForm = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      pickup: {
-        address: "Farmgate",
-        coordinates: { lat: 23.7356, lng: 90.3918 },
-      },
-      destination: {
-        address: "Airport",
-        coordinates: { lat: 23.7389, lng: 90.3944 },
-      },
-    },
-    mode: "onSubmit",
+export default function RideRequestForm() {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<z.infer<typeof createRideZodSchema>>({
+    resolver: zodResolver(createRideZodSchema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: z.infer<typeof createRideZodSchema>) => {
     try {
-      const res = await rideRequest(data);
-      setFareEstimate(res?.data?.data?.fare);
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
+      const res = await axios.post("/api/rides/request", data);
+      toast.success("Ride request submitted successfully!");
+      reset();
+      console.log("Ride created:", res.data);
+    } catch (err) {
+      console.error(err);
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message || "Ride request failed!");
+      } else {
+        toast.error("Ride request failed!");
+      }
     }
   };
 
-  const handleBookRide = async () => {
-    navigate("/rider/history");
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <main className="pt-20 pb-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-              Book Your <span className="text-primary">Ride</span>
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Enter your trip details and get an instant fare estimate
-            </p>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4 transition-colors duration-300">
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 transition-colors duration-300">
+        <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 text-center">
+          Request a Ride 🚖
+        </h1>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Rider ID */}
+          <div>
+            <label className="block font-medium text-gray-700 dark:text-gray-200">
+              Rider ID
+            </label>
+            <input
+              type="text"
+              {...register("riderId")}
+              className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400"
+              placeholder="Enter your Rider ID"
+            />
+            {errors.riderId && (
+              <p className="text-red-500 text-sm">{errors.riderId.message}</p>
+            )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Booking Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-primary" />
-                  Trip Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <Form {...tripForm}>
-                  <form onSubmit={tripForm.handleSubmit(onSubmit)}>
-                    <div className="space-y-8">
-                      {/* Pickup Location */}
-                      <div>
-                        <FormField
-                          control={tripForm.control}
-                          name="pickup.address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Pickup Location</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="Enter pickup address"
-                                    className="pl-10 text-base"
-                                    {...field}
-                                  />
-                                  <Navigation className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      {/* Destination */}
-                      <div>
-                        <FormField
-                          control={tripForm.control}
-                          name="destination.address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Destination Location</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="Enter destination address"
-                                    className="pl-10 text-base"
-                                    {...field}
-                                  />
-                                  <Navigation className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div>
-                        <Button
-                          className="w-full cursor-pointer hover:shadow-primary"
-                          type="submit"
-                          size="lg"
-                        >
-                          Fare Estimate
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-
-            {/* Fare Estimation */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-primary" />
-                  Fare Estimate
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {fareEstimate ? (
-                  <>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-primary mb-2">
-                        ৳{fareEstimate}
-                      </div>
-                      <p className="text-muted-foreground">Estimated fare</p>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">
-                          Total fare
-                        </span>
-                        <span>৳{fareEstimate}</span>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <ConfirmModal onConfirm={handleBookRide}>
-                      <Button
-                        className="w-full cursor-pointer hover:shadow-primary"
-                        size="lg"
-                      >
-                        Book Ride - ৳{fareEstimate}
-                      </Button>
-                    </ConfirmModal>
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      Enter pickup and destination to see fare estimate
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {/* Vehicle Type */}
+          <div>
+            <label className="block font-medium text-gray-700 dark:text-gray-200">
+              Vehicle Type
+            </label>
+            <select
+              {...register("vehicleType")}
+              className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+            >
+              <option value="">Select vehicle type</option>
+              <option value="CAR">Car</option>
+              <option value="BIKE">Bike</option>
+              <option value="AUTO">Auto</option>
+            </select>
+            {errors.vehicleType && (
+              <p className="text-red-500 text-sm">
+                {errors.vehicleType.message}
+              </p>
+            )}
           </div>
-        </div>
-      </main>
+
+          {/* Pickup Location */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Pickup Lat
+              </label>
+              <input
+                type="number"
+                step="any"
+                {...register("pickupLocation.lati", { valueAsNumber: true })}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              />
+              {errors.pickupLocation?.lati && (
+                <p className="text-red-500 text-sm">
+                  {errors.pickupLocation.lati.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Pickup Long
+              </label>
+              <input
+                type="number"
+                step="any"
+                {...register("pickupLocation.long", { valueAsNumber: true })}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              />
+              {errors.pickupLocation?.long && (
+                <p className="text-red-500 text-sm">
+                  {errors.pickupLocation.long.message}
+                </p>
+              )}
+            </div>
+            <div className="md:col-span-3">
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Pickup Address
+              </label>
+              <input
+                type="text"
+                {...register("pickupLocation.address")}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                placeholder="Enter pickup address"
+              />
+              {errors.pickupLocation?.address && (
+                <p className="text-red-500 text-sm">
+                  {errors.pickupLocation.address.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Destination */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Destination Lat
+              </label>
+              <input
+                type="number"
+                step="any"
+                {...register("destination.lati", { valueAsNumber: true })}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              />
+              {errors.destination?.lati && (
+                <p className="text-red-500 text-sm">
+                  {errors.destination.lati.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Destination Long
+              </label>
+              <input
+                type="number"
+                step="any"
+                {...register("destination.long", { valueAsNumber: true })}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              />
+              {errors.destination?.long && (
+                <p className="text-red-500 text-sm">
+                  {errors.destination.long.message}
+                </p>
+              )}
+            </div>
+            <div className="md:col-span-3">
+              <label className="block font-medium text-gray-700 dark:text-gray-200">
+                Destination Address
+              </label>
+              <input
+                type="text"
+                {...register("destination.address")}
+                className="w-full border rounded-lg p-2 mt-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                placeholder="Enter destination address"
+              />
+              {errors.destination?.address && (
+                <p className="text-red-500 text-sm">
+                  {errors.destination.address.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Submitting..." : "Request Ride"}
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default RideBooking;
+}

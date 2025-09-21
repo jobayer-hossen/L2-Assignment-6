@@ -239,14 +239,14 @@ export default function AllUsers() {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
                               handleBlockUnblock(user?._id, user?.isActive)
                             }
                             className={
                               user.isActive === "ACTIVE"
-                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
                                 : ""
                             }
                           >
