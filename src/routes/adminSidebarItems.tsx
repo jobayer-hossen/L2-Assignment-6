@@ -1,4 +1,5 @@
 import AllDrivers from "@/pages/admin/AllDrivers";
+import AllRides from "@/pages/admin/AllRides";
 import AllUsers from "@/pages/admin/AllUsers";
 import Analytics from "@/pages/admin/Analytics";
 import UpdateAdminProfile from "@/pages/admin/UpdateAdminProfile";
@@ -12,6 +13,16 @@ export const adminSidebarItems: ISidebarItem[] = [
         title: "Analytics",
         url: "/admin/analytics",
         component: Analytics,
+      },
+    ],
+  },
+  {
+    title: "All Rides",
+    items: [
+      {
+        title: "Manage Rides",
+        url: "/admin/all-rides",
+        component: AllRides,
       },
     ],
   },
