@@ -37,10 +37,10 @@ export const adminApi = baseApi.injectEndpoints({
 
     allRides: builder.query({
       query: () => ({
-        url: "/users/rides",
+        url: "/rides/all-ride-admin",
         method: "GET",
       }),
-      providesTags: ["USER"],
+      providesTags: ["RIDE"],
     }),
 
     updateUserStatus: builder.mutation({
@@ -50,6 +50,15 @@ export const adminApi = baseApi.injectEndpoints({
         data: { isActive },
       }),
       invalidatesTags: ["USER"],
+    }),
+
+    updateRideStatus: builder.mutation({
+      query: ({ id, rideStatus }) => ({
+        url: `/rides/status/${id}`,
+        method: "PATCH",
+        data: { rideStatus },
+      }),
+      invalidatesTags: ["RIDE"],
     }),
 
     updateDriverApprovalStatus: builder.mutation({
@@ -75,6 +84,8 @@ export const adminApi = baseApi.injectEndpoints({
 export const {
   useAllUsersQuery,
   useAllStatsQuery,
+  useAllRidesQuery,
+  useUpdateRideStatusMutation,
   useDeleteUserMutation,
   useUpdateUserStatusMutation,
   useAllDriversQuery,

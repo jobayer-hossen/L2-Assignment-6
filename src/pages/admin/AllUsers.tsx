@@ -127,8 +127,6 @@ export default function AllUsers() {
         <h1 className="text-4xl font-bold text-foreground mb-2 text-center md:text-left">
           Manage Users
         </h1>
-
-
       </div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="relative flex-1 max-w-md">
