@@ -29,6 +29,8 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const registerSchema = z
   .object({
     name: z
@@ -94,7 +96,9 @@ export function RegisterForm({
       }
     }
   };
-
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/auth/google`;
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -196,13 +200,20 @@ export function RegisterForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full cursor-pointer">
               {isLoading ? <Loader2 /> : "Submit"}
             </Button>
           </form>
         </Form>
       </div>
-
+      <Button
+        onClick={handleGoogleLogin}
+        type="button"
+        variant="outline"
+        className="w-full cursor-pointer rounded border-white bg-primary/15 hover:bg-primary/25 hover:text-primary"
+      >
+        Login with Google
+      </Button>
       <div className="text-center text-sm cursor-pointer">
         Already have an account?{" "}
         <Link to="/login" className="underline underline-offset-4">

@@ -117,6 +117,7 @@ export default function RideRequestForm() {
       toast.success("Ride request submitted successfully!");
       reset({ riderId: payload.riderId });
       reset();
+      
     } catch (err) {
       console.error("❌ API Error:", err);
       toast.error("Failed to submit ride request.");
@@ -124,8 +125,8 @@ export default function RideRequestForm() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4  transition-colors duration-300">
-      <div className="w-full max-w-5xl backdrop-blur-sm bg-white/80 dark:bg-gray-800/90 shadow-xl rounded-3xl p-8 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl">
+    <div className="flex justify-center items-center min-h-screen p-4 transition-colors duration-300">
+      <div className="w-full max-w-5xl backdrop-blur-sm bg-primary/20 shadow-xl rounded-3xl p-8 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white mb-2">
             Book Your Ride 🚖
@@ -256,11 +257,11 @@ export default function RideRequestForm() {
           <input type="hidden" {...register("destination.address")} />
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-4 w-full flex justify-center">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full cursor-pointer py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-[300px] cursor-pointer py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center">
@@ -287,7 +288,7 @@ export default function RideRequestForm() {
                   Processing...
                 </span>
               ) : (
-                "Request Ride Now 🚕"
+                "Request Ride Now"
               )}
             </button>
           </div>

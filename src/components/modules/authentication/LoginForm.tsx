@@ -25,6 +25,8 @@ const loginFormSchema = z.object({
   password: z.string().min(8, { error: "Password is too short" }),
 });
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 export function LoginForm({
   className,
   ...props
@@ -35,15 +37,6 @@ export function LoginForm({
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      /* Admin */
-      // email: "super.online@gmail.com",
-      // password: "Admin@1234",
-      /* Driver */
-      // email: "driver@gmail.com",
-      // password: "Army@1234",
-      /* Rider */
-      // email: "rider@gmail.com",
-      // password: "Army@1234",
       email: "",
       password: "",
     },
@@ -68,6 +61,10 @@ export function LoginForm({
         toast.error("An unexpected error occurred");
       }
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/auth/google`;
   };
 
   return (
@@ -123,6 +120,15 @@ export function LoginForm({
             </Button>
           </form>
         </Form>
+
+        <Button
+          onClick={handleGoogleLogin}
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer rounded border-white bg-primary/15 hover:bg-primary/25 hover:text-primary"
+        >
+          Login with Google
+        </Button>
 
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">

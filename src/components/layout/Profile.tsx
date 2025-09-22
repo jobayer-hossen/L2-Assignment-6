@@ -24,8 +24,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 export default function Profile() {
   const [logout] = useLogoutMutation();
   const { data: userInfo } = useUserInfoQuery(undefined);
-  const { data: driverInfo } = useDriverInfoQuery(undefined);
-  const activeStatus = driverInfo?.data[0]?.isOnline;
+  // const { data: driverInfo } = useDriverInfoQuery(undefined);
+  // const activeStatus = driverInfo?.data[0]?.isOnline;
 
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
@@ -46,7 +46,7 @@ export default function Profile() {
               />
               <AvatarFallback>KK</AvatarFallback>
             </Avatar>
-            {userInfo?.data?.role === "DRIVER" && (
+            {/* {userInfo?.data?.role === "DRIVER" && (
               <span
                 className={`border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 ${
                   activeStatus ? "bg-emerald-500" : "bg-muted-foreground"
@@ -54,7 +54,7 @@ export default function Profile() {
               >
                 <span className="sr-only">Offline</span>
               </span>
-            )}
+            )} */}
           </div>
           <ChevronDownIcon
             size={16}

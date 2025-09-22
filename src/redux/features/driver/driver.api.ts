@@ -45,13 +45,37 @@ export const driverApi = baseApi.injectEndpoints({
       providesTags: ["DRIVER"],
     }),
 
-    earingStatus: builder.query({
+    allRideForDriver: builder.query({
       query: () => ({
-        url: "/driver/earnings",
+        url: "/rides/available-ride-driver",
         method: "GET",
       }),
+      providesTags: ["RIDE"],
+    }),
 
-      providesTags: ["DRIVER"],
+    rideCancel: builder.mutation({
+      query: ({ rideId, cancelReason }) => ({
+        url: `/rides/cancel/${rideId}`,
+        method: "PATCH",
+        data: { cancelReason },
+      }),
+      invalidatesTags: ["RIDE"],
+    }),
+
+    acceptRide: builder.mutation({
+      query: (rideId: string) => ({
+        url: `/rides/accept/${rideId}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["RIDE"],
+    }),
+
+    getRideByIdForDriver: builder.query({
+      query: (id: string) => ({
+        url: `/rides/driver/rides/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["RIDER"],
     }),
   }),
 });
@@ -59,7 +83,10 @@ export const driverApi = baseApi.injectEndpoints({
 export const {
   useVehicleRegisterMutation,
   useDriverInfoQuery,
-  useEaringStatusQuery,
+  useGetRideByIdForDriverQuery,
   useIsOnlineStatusMutation,
   useUpdateLocationStatusMutation,
+  useAllRideForDriverQuery,
+  useRideCancelMutation,
+  useAcceptRideMutation
 } = driverApi;

@@ -1,4 +1,3 @@
-import Logo from "@/components/layout/Logo";
 import { LoginForm } from "@/components/modules/authentication/LoginForm";
 import { Link } from "react-router";
 
@@ -7,8 +6,15 @@ export default function Login() {
     <div className="min-h-svh">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2">
-          <Link to="/register" className="flex items-center gap-2 font-medium">
-            <Logo />
+          <Link to="/" className="flex items-center space-x-2 mb-4">
+            <img
+              src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+              alt="logo"
+              className="w-[40px]"
+            />
+            <span className="font-bold text-2xl text-primary dark:text-primary-light">
+              LoopRide
+            </span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

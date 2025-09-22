@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 export default function Footer() {
   return (
     <footer className=" text-gray-700 dark:text-gray-300 relative overflow-hidden">
-      
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -17,13 +16,19 @@ export default function Footer() {
           {/* Brand & Contact */}
           <div className="md:col-span-2 space-y-4">
             <Link to="/" className="flex items-center space-x-2 mb-4">
+              <img
+                src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+                alt="logo"
+                className="w-[40px]"
+              />
               <span className="font-bold text-2xl text-gray-900 dark:text-white">
                 LoopRide
               </span>
             </Link>
             <p className="text-gray-600 dark:text-gray-400 max-w-md">
-              LoopRide connects riders with trusted drivers, ensuring safe, fast, 
-              and affordable rides. Whether commuting or exploring, we are always there for you.
+              LoopRide connects riders with trusted drivers, ensuring safe,
+              fast, and affordable rides. Whether commuting or exploring, we are
+              always there for you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
@@ -43,37 +48,46 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Quick Links</h3>
+            <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
-              {["Home", "About Us", "Features", "Contact", "FAQ"].map((link) => (
-                <li key={link}>
-                  <Link
-                    to={`/${link.toLowerCase().replace(" ", "-")}`}
-                    className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
-                  >
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              {["Home", "About Us", "Features", "Contact", "FAQ"].map(
+                (link) => (
+                  <li key={link}>
+                    <Link
+                      to={`/${link.toLowerCase().replace(" ", "-")}`}
+                      className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Legal</h3>
+            <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">
+              Legal
+            </h3>
             <ul className="space-y-2">
-              {["Privacy Policy", "Terms of Service", "Cookie Policy", "Safety Guidelines"].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                )
-              )}
+              {[
+                "Privacy Policy",
+                "Terms of Service",
+                "Cookie Policy",
+                "Safety Guidelines",
+              ].map((item) => (
+                <li key={item}>
+                  <a
+                    href="#"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </motion.div>

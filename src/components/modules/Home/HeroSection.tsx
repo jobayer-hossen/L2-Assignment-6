@@ -43,8 +43,8 @@ export default function HeroSection() {
               className="mt-6 text-xl text-muted-foreground max-w-2xl"
             >
               Get to your destination faster, safer, and at the best price.
-              Whether you’re heading to work, school, or a night out,
-              RideNow is here for you 24/7.
+              Whether you’re heading to work, school, or a night out, RideNow is
+              here for you 24/7.
             </motion.p>
 
             {/* Buttons */}
@@ -62,23 +62,31 @@ export default function HeroSection() {
               className="mt-8 flex flex-col sm:flex-row gap-4"
             >
               {userInfo?.data?.role === "DRIVER" ? (
-                <motion.div
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                >
-                  <Link to="/vehicles">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="text-lg px-8 py-3 cursor-pointer bg-primary hover:shadow-primary"
-                    >
-                      Register Your Vehicle
-                    </Button>
-                  </Link>
-                </motion.div>
+                <>
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                  >
+                    <Link to="/pick-a-ride">
+                      <Button
+                        size="lg"
+                        className="bg-primary hover:shadow-primary text-lg px-8 py-3 cursor-pointer"
+                      >
+                        Pick a Ride
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </Button>
+                    </Link>
+                  </motion.div>
+                </>
               ) : (
                 <>
                   <motion.div
-                    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
                   >
                     <Link to="/ride-request">
                       <Button
@@ -92,7 +100,10 @@ export default function HeroSection() {
                   </motion.div>
 
                   <motion.div
-                    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
                   >
                     <Link to="/register">
                       <Button
@@ -117,15 +128,21 @@ export default function HeroSection() {
             >
               <div className="text-center">
                 <div className="text-2xl font-bold text-foreground">2M+</div>
-                <div className="text-sm text-muted-foreground">Rides Completed</div>
+                <div className="text-sm text-muted-foreground">
+                  Rides Completed
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-foreground">80K+</div>
-                <div className="text-sm text-muted-foreground">Drivers Onboard</div>
+                <div className="text-sm text-muted-foreground">
+                  Drivers Onboard
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-foreground">4.95★</div>
-                <div className="text-sm text-muted-foreground">User Satisfaction</div>
+                <div className="text-sm text-muted-foreground">
+                  User Satisfaction
+                </div>
               </div>
             </motion.div>
           </motion.div>

@@ -20,6 +20,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { driverSidebarItems } from "./driverSidebarItems";
 import { riderSidebarItems } from "./riderSidebarItems";
+import PickARide from "@/pages/driver/PickARide";
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +35,8 @@ export const router = createBrowserRouter([
       { path: "faq", Component: Features },
       { path: "ride-request", Component: withAuth(RequestRidePage, role.rider as TRole) },
       { path: "/ride-details/:rideId", Component: RideDetailsPage },
-      { path: "/vehicles", Component: VehicleRegistration },
+      { path: "/pick-a-ride", Component: PickARide },
+      { path: "/be-a-driver", Component: VehicleRegistration },
     ],
   },
   {

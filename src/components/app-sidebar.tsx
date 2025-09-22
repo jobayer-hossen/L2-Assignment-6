@@ -10,11 +10,20 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 import * as React from "react";
 import { Link } from "react-router";
-import Logo from "./layout/Logo";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { LogOutIcon } from "lucide-react";
+import { useDriverInfoQuery } from "@/redux/features/driver/driver.api";
+import { useAppDispatch } from "@/redux/hook";
+import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userData } = useUserInfoQuery(undefined);
@@ -23,11 +32,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: getSidebarItems(userData?.data?.role),
   };
 
+  const [logout] = useLogoutMutation();
+  // const { data: userInfo } = useUserInfoQuery(undefined);
+  // const { data: driverInfo } = useDriverInfoQuery(undefined);
+  // const activeStatus = driverInfo?.data[0]?.isOnline;
+
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    await logout(undefined);
+    dispatch(authApi.util.resetApiState());
+    toast.success("Log out successfully");
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="items-center">
-        <Link to="/">
-          <Logo />
+        <Link to="/" className="flex items-center space-x-2 mb-4">
+          <img
+            src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+            alt="logo"
+            className="w-[40px]"
+          />
+          <span className="font-bold text-2xl text-primary dark:text-primary-light">
+            LoopRide
+          </span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -50,6 +78,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarRail />
+
+      <div className="w-full flex justify-center mb-6">
+        <Button
+          onClick={() => handleLogout()}
+          size="lg"
+          className="bg-primary hover:shadow-primary text-lg px-8 py-3 cursor-pointer"
+        >
+          <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
+          Logout
+        </Button>
+      </div>
     </Sidebar>
   );
 }

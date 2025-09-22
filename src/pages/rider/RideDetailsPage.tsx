@@ -23,8 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useGetRideByIdForDriverQuery } from "@/redux/features/driver/driver.api";
 import {
-  useGetRideByIdQuery,
+  // useGetRideByIdQuery,
   useRideAcceptStatusMutation,
   useRidePickupStatusMutation,
 } from "@/redux/features/ride/riders.api";
@@ -54,7 +55,7 @@ type StatusFormData = z.infer<typeof statusSchema>;
 
 const RideDetails = () => {
   const { rideId } = useParams();
-  const { data: rideData, isLoading, isError } = useGetRideByIdQuery(rideId!);
+  const { data: rideData, isLoading, isError } = useGetRideByIdForDriverQuery(rideId!);
   const [acceptRide] = useRideAcceptStatusMutation();
   const [pickedUpRide] = useRidePickupStatusMutation();
 
@@ -169,8 +170,8 @@ const RideDetails = () => {
                         rideData?.data.status
                       )} text-white`}
                     >
-                      {rideData?.data.status.charAt(0).toUpperCase() +
-                        rideData?.data.status.slice(1)}
+                      {/* {rideData?.data.status.charAt(0).toUpperCase() +
+                        rideData?.data.status.slice(1)} */}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -182,10 +183,10 @@ const RideDetails = () => {
                         Pickup Location
                       </p>
                       <p className="font-medium">
-                        {rideData?.data.pickup.address}
+                        {rideData?.data.pickupLocation.address}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Picked up at {rideData?.data.pickupTime}
+                        Picked up at {rideData?.data.timestampsLog.acceptedAt}
                       </p>
                     </div>
                   </div>

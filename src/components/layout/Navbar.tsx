@@ -48,9 +48,18 @@ export default function Navbar() {
                   strokeLinejoin="round"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M4 12L20 12" className="origin-center -translate-y-[7px] transition-all duration-300" />
-                  <path d="M4 12H20" className="origin-center transition-all duration-300" />
-                  <path d="M4 12H20" className="origin-center translate-y-[7px] transition-all duration-300" />
+                  <path
+                    d="M4 12L20 12"
+                    className="origin-center -translate-y-[7px] transition-all duration-300"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center transition-all duration-300"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center translate-y-[7px] transition-all duration-300"
+                  />
                 </svg>
               </Button>
             </PopoverTrigger>
@@ -77,9 +86,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-bold text-primary dark:text-primary-light hover:text-primary/90 transition"
+            className="text-2xl flex items-center gap-2 font-bold text-primary dark:text-primary-light hover:text-primary/90 transition"
           >
-            LoopRide
+           <img src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927" alt="logo" className="w-[40px]"/> LoopRide
           </Link>
 
           {/* Desktop nav */}
@@ -99,6 +108,45 @@ export default function Navbar() {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
+
+          {data?.data?.role === "RIDER" && (
+            <>
+              <Link
+                to="/ride-request"
+                className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
+              >
+                Request a Ride
+              </Link>
+              <Link
+                to="/ride-request"
+                className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/10"
+              >
+                Be a Driver
+              </Link>
+            </>
+          )}
+          {data?.data?.role === "ADMIN" || data?.data?.role === "SUPER_ADMIN" && (
+            <>
+              <Link
+                to="/admin/analytics"
+                className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
+              >
+               Dashboard
+              </Link>
+            </>
+          )}
+
+          {data?.data?.role === "DRIVER" && (
+            <>
+              <Link
+                to="/pick-a-ride"
+                className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
+              >
+               Pick a ride
+              </Link>
+            </>
+          )}
+
         </div>
 
         {/* Right side */}

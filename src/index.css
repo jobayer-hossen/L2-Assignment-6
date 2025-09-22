@@ -141,11 +141,11 @@
 }
 
 .blob1 {
-  width: 250px;
-  height: 250px;
-  background: linear-gradient(135deg, #dd5e5e, #b39952);
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, oklch(70.517% 0.18279 7.591), oklch(43.186% 0.15623 13.559));
   top: 100px;
-  left: 680px;
+  left: 350px;
   animation-duration: 25s;
 }
 

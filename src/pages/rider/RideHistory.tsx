@@ -123,6 +123,7 @@ export default function RideHistory() {
             {rides.map((ride: any, index: number) => (
               <TableRow
                 key={ride._id}
+                
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
               >
                 <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
