@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
       { path: "features", Component: Features },
       { path: "contact", Component: Contact },
       { path: "faq", Component: Features },
-      { path: "ride-request", Component: RequestRidePage },
+      { path: "ride-request", Component: withAuth(RequestRidePage, role.rider as TRole) },
       { path: "/ride-details/:rideId", Component: RideDetailsPage },
       { path: "/vehicles", Component: VehicleRegistration },
     ],

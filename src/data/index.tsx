@@ -3,45 +3,49 @@ import { Clock, CreditCard, Shield, Smartphone } from "lucide-react";
 export const features = [
   {
     icon: <Clock className="w-6 h-6" />,
-    title: "24/7 Availability",
+    title: "Instant Booking",
     description:
-      "Book rides anytime, anywhere with our round-the-clock service.",
+      "Request a ride in seconds and get matched with the nearest driver instantly.",
   },
   {
     icon: <Shield className="w-6 h-6" />,
-    title: "Safe & Secure",
+    title: "Trusted Drivers",
     description:
-      "Verified drivers, GPS tracking, and emergency support for your safety.",
+      "All drivers are verified and rated to ensure a reliable and secure journey.",
   },
   {
     icon: <CreditCard className="w-6 h-6" />,
-    title: "Easy Payments",
-    description: "Multiple payment options including cards, wallets, and cash.",
+    title: "Flexible Payments",
+    description:
+      "Pay your way with cards, mobile wallets, or cash at the end of the trip.",
   },
   {
     icon: <Smartphone className="w-6 h-6" />,
-    title: "Smart Booking",
-    description: "Intuitive app interface with real-time tracking and updates.",
+    title: "Real-Time Tracking",
+    description:
+      "Track your driver’s location live and stay updated throughout your trip.",
   },
 ];
+
 
 export const steps = [
   {
     step: "01",
-    title: "Book Your Ride",
-    description: "Enter your pickup and destination locations in the app.",
+    title: "Set Your Destination",
+    description: "Open the app, choose where you want to go, and confirm your pickup point.",
   },
   {
     step: "02",
-    title: "Match with Driver",
-    description: "Get matched with a nearby verified driver instantly.",
+    title: "Choose Your Ride",
+    description: "Select from affordable, premium, or shared rides that best fit your needs.",
   },
   {
     step: "03",
-    title: "Track & Ride",
-    description: "Track your driver's arrival and enjoy a safe ride.",
+    title: "Enjoy the Journey",
+    description: "Track your driver in real time and arrive at your destination safely.",
   },
 ];
+
 
 export const testimonials = [
   {
