@@ -1,14 +1,17 @@
+import { scrollToTop } from "@/hooks/scroll";
 import {
   useAcceptRideMutation,
   useAllRideForDriverQuery,
   useRideCancelMutation,
 } from "@/redux/features/driver/driver.api";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export default function PickARide() {
+  scrollToTop();
   const navigate = useNavigate();
   const { data, isLoading, isError } = useAllRideForDriverQuery(undefined);
   const [rideCancel] = useRideCancelMutation();
@@ -18,8 +21,8 @@ export default function PickARide() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-[70vh]">
-        <span className="text-gray-500">Loading rides...</span>
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
   }

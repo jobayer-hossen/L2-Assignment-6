@@ -7,62 +7,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
-import { useGetRideByIdForDriverQuery } from "@/redux/features/driver/driver.api";
 import {
-  // useGetRideByIdQuery,
-  useRideAcceptStatusMutation,
-  useRidePickupStatusMutation,
-} from "@/redux/features/ride/riders.api";
+  useGetRideByIdForDriverQuery,
+  useUpdateRideStatusMutation,
+} from "@/redux/features/driver/driver.api";
 import isApiErrorResponse from "@/utils/errorGurd";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  Car,
-  CheckCircle,
-  Clock,
-  CreditCard,
-  Loader2,
-  MapPin,
-  Receipt,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
+import { ArrowLeft, Clock, Loader2, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
+import { scrollToTop } from "@/hooks/scroll";
 
-// Status update schema
 const statusSchema = z.object({
-  status: z.enum(["accept", "picked_up", "completed"]),
+  status: z.enum(["ACCEPTED", "IN_TRANSIT", "PICKED_UP", "COMPLETED"]),
 });
 
 type StatusFormData = z.infer<typeof statusSchema>;
 
 const RideDetails = () => {
+  scrollToTop();
   const { rideId } = useParams();
-  const { data: rideData, isLoading, isError } = useGetRideByIdForDriverQuery(rideId!);
-  const [acceptRide] = useRideAcceptStatusMutation();
-  const [pickedUpRide] = useRidePickupStatusMutation();
-
-  // Status form
-  const statusForm = useForm<StatusFormData>({
-    resolver: zodResolver(statusSchema),
-  });
+  const {
+    data: rideData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetRideByIdForDriverQuery(rideId!);
+  const [updateRideStatus] = useUpdateRideStatusMutation();
 
   if (isLoading) {
     return (
@@ -76,62 +49,68 @@ const RideDetails = () => {
     return <div className="text-center text-red-500">Ride not found</div>;
   }
 
+  function formatDate(date: string) {
+    return new Date(date).toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
   const onStatusSubmit = async (data: StatusFormData) => {
     try {
-      const res = await pickedUpRide({
+      const res = await updateRideStatus({
         status: data.status,
         id: rideData?.data?._id,
       }).unwrap();
       if (res.success) {
         toast.success(res.message);
+        refetch();
       } else {
         toast.warning(res.message);
       }
     } catch (error) {
       if (isApiErrorResponse(error)) {
-        // TypeScript now knows that `error` has `data` and `message`
         toast.error(error.data.message);
       } else {
-        // Handle other types of errors, like network errors
         toast.error("An unexpected error occurred");
       }
     }
   };
 
-  const handleAccept = async () => {
-    try {
-      const result = await acceptRide({
-        status: "accepted",
-        id: rideData?.data?._id,
-      }).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-      } else {
-        toast.warning(result.message);
-      }
-    } catch (error) {
-      if (isApiErrorResponse(error)) {
-        // TypeScript now knows that `error` has `data` and `message`
-        toast.error(error.data.message);
-      } else {
-        // Handle other types of errors, like network errors
-        toast.error("An unexpected error occurred");
-      }
-    }
-  };
+  function getDistanceFromLatLonInKm(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-500";
-      case "cancelled":
-        return "bg-red-500";
-      case "ongoing":
-        return "bg-blue-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
+  const pickup = rideData?.data.pickupLocation;
+  const dest = rideData?.data.destination;
+
+  const distance =
+    pickup && dest
+      ? getDistanceFromLatLonInKm(
+          pickup.lati,
+          pickup.long,
+          dest.lati,
+          dest.long
+        ).toFixed(2) + " km"
+      : "N/A";
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,334 +136,179 @@ const RideDetails = () => {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Trip Information */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-primary" />
-                      Trip Information
-                    </span>
-                    <Badge
-                      className={`${getStatusColor(
-                        rideData?.data.status
-                      )} text-white`}
-                    >
-                      {/* {rideData?.data.status.charAt(0).toUpperCase() +
-                        rideData?.data.status.slice(1)} */}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground">
-                        Pickup Location
-                      </p>
-                      <p className="font-medium">
-                        {rideData?.data.pickupLocation.address}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Picked up at {rideData?.data.timestampsLog.acceptedAt}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-3 h-3 bg-red-500 rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground">
-                        Destination
-                      </p>
-                      <p className="font-medium">
-                        {rideData?.data.destination.address}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Dropped off at {rideData?.data.dropoffTime}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Distance</p>
-                      <p className="font-medium">{rideData?.data.distance}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Duration</p>
-                      <p className="font-medium">{rideData?.data.duration}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Ride Type</p>
-                      <p className="font-medium capitalize">
-                        {rideData?.data.rideType}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Date</p>
-                      <p className="font-medium">{rideData?.data.date}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Driver Information */}
-              {/* <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-primary" />
-                    Driver Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4 mb-4">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage
-                        src="/placeholder.svg"
-                        alt={rideDetails.driverName}
-                      />
-                      <AvatarFallback>
-                        {rideDetails.driverName.slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">
-                        {rideDetails.driverName}
-                      </h3>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm">
-                          {rideDetails.driverRating} rating
-                        </span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-primary" />
+                        Trip Information
+                      </span>
+                      <Badge
+                        variant={
+                          rideData?.data.rideStatus === "COMPLETED"
+                            ? "secondary"
+                            : rideData?.data.rideStatus === "CANCELLED"
+                            ? "destructive"
+                            : "default"
+                        }
+                        className="px-3 py-1 text-xs font-medium"
+                      >
+                        {rideData?.data.rideStatus}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mt-2"></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">
+                          Pickup Location
+                        </p>
+                        <p className="font-medium">
+                          {rideData?.data.pickupLocation.address}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Picked up at{" "}
+                          {formatDate(rideData?.data.timestampsLog.acceptedAt)}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {rideDetails.vehicle}
-                      </p>
                     </div>
-                  </div>
 
-                  <Button variant="outline" className="w-full">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Contact Driver
-                  </Button>
-                </CardContent>
-              </Card> */}
-            </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-3 h-3 bg-red-500 rounded-full mt-2"></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">
+                          Destination
+                        </p>
+                        <p className="font-medium">
+                          {rideData?.data.destination.address}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Dropped off at {rideData?.data.dropoffTime}
+                        </p>
+                      </div>
+                    </div>
 
-            {/* Payment & Timeline */}
-            <div className="space-y-6">
-              {/* Payment Details */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Receipt className="w-5 h-5 text-primary" />
-                    Payment Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center mb-4">
-                    <div className="text-3xl font-bold text-primary">
-                      ৳{rideData?.data.fare}
-                    </div>
-                    <p className="text-muted-foreground">Total Amount</p>
-                  </div>
+                    <Separator />
 
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Base fare</span>
-                      <span>৳50</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Distance
+                        </p>
+                        <p className="font-medium">{distance}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Ride created date
+                        </p>
+                        <p className="font-medium">
+                          {formatDate(rideData?.data.createdAt)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Distance charge
-                      </span>
-                      <span>৳{rideData?.data.fare - 50}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Service charge
-                      </span>
-                      <span>৳0</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Discount</span>
-                      <span className="text-green-600">-৳0</span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">
-                        Payment Method
-                      </span>
-                    </div>
-                    <span className="font-medium">
-                      {rideData?.data.paymentMethod}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
 
             <div className="space-y-6">
               {/*Ride Status Update Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Car className="h-5 w-5 text-primary" />
-                    Status Update
-                  </CardTitle>
-                  <CardDescription>
-                    Update your current ride status
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...statusForm}>
-                    <form
-                      onSubmit={statusForm.handleSubmit(onStatusSubmit)}
-                      className="space-y-4"
-                    >
-                      <FormField
-                        control={statusForm.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Current Status</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="picked_up">
-                                  Picked Up
-                                </SelectItem>
-                                <SelectItem value="completed">
-                                  Completed
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-full">
-                        Update Status
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <Card className="shadow-lg border border-border/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                      <Clock className="w-5 h-5 text-primary" />
+                      Ride Status Timeline
+                    </CardTitle>
+                    <CardDescription>
+                      Manage and track the current status of this ride
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="space-y-6">
+                    {/* 🔹 Timeline */}
+                    <RideStatusTimeline
+                      currentStatus={rideData?.data.rideStatus}
+                    />
+
+                    {/* 🔹 Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        className="bg-purple-600 hover:bg-purple-700 text-white flex-1 cursor-pointer"
+                        disabled={rideData?.data.rideStatus !== "ACCEPTED"}
+                        onClick={() =>
+                          onStatusSubmit({
+                            status: "PICKED_UP",
+                          } as StatusFormData)
+                        }
+                      >
+                        Picked Up
                       </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="space-y-6">
-              {/* Ride Timeline */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-primary" />
-                    Ride Timeline
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex flex-col  gap-3">
-                      {/* Accepted */}
-                      {rideData?.data?.status === "accepted" ? (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          <div className="flex-1">
-                            <p className="font-medium">Ride Accepted</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-muted-foreground" />
-                          <div className="flex-1">
-                            <p className="font-medium">Ride Accepted</p>
-                          </div>
-                        </>
-                      )}
 
-                      {/* Picked Up */}
-                      {rideData?.data?.status === "picked_up" ? (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          <div className="flex-1">
-                            <p className="font-medium">Picked Up</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-muted-foreground" />
-                          <div className="flex-1">
-                            <p className="font-medium">Picked Up</p>
-                          </div>
-                        </>
-                      )}
+                      <Button
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white flex-1 cursor-pointer"
+                        disabled={rideData?.data.rideStatus !== "PICKED_UP"}
+                        onClick={() =>
+                          onStatusSubmit({
+                            status: "IN_TRANSIT",
+                          } as StatusFormData)
+                        }
+                      >
+                        IN TRANSIT
+                      </Button>
 
-                      {/* completed */}
-                      {rideData?.data?.status === "completed" ? (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          <div className="flex-1">
-                            <p className="font-medium">Completed</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5 text-muted-foreground" />
-                          <div className="flex-1">
-                            <p className="font-medium">Completed</p>
-                          </div>
-                        </>
+                      <Button
+                        className="bg-green-600 hover:bg-green-700 text-white flex-1 cursor-pointer"
+                        disabled={rideData?.data.rideStatus !== "IN_TRANSIT"}
+                        onClick={() =>
+                          onStatusSubmit({
+                            status: "COMPLETED",
+                          } as StatusFormData)
+                        }
+                      >
+                        Completed
+                      </Button>
+                    </div>
+
+                    {/* 🔹 Status Logs */}
+                    <div className="rounded-lg bg-muted/40 p-4 space-y-2 text-sm">
+                      {rideData?.data.timestampsLog?.acceptedAt && (
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                          <span className="text-green-600">✅</span>
+                          <span className="font-medium">Accepted:</span>
+                          {formatDate(rideData?.data.timestampsLog.acceptedAt)}
+                        </p>
+                      )}
+                      {rideData?.data.timestampsLog?.pickedUpAt && (
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                          <span className="text-purple-600">🚗</span>
+                          <span className="font-medium">Picked Up:</span>
+                          {formatDate(rideData?.data.timestampsLog.pickedUpAt)}
+                        </p>
+                      )}
+                      {rideData?.data.timestampsLog?.completedAt && (
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                          <span className="text-green-700">🏁</span>
+                          <span className="font-medium">Completed:</span>
+                          {formatDate(rideData?.data.timestampsLog.completedAt)}
+                        </p>
                       )}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </div>
-          </div>
-
-          {/* Mock Map */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Route Map</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted rounded-lg h-64 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">
-                    Route map showing pickup to destination path
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    (Demo Mode - Map integration available with backend)
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-center gap-4 mt-8">
-            <Button
-              onClick={handleAccept}
-              disabled={rideData?.data?.status === "requested" ? false : true}
-            >
-              Accept Ride
-            </Button>
           </div>
         </div>
       </main>
@@ -493,3 +317,67 @@ const RideDetails = () => {
 };
 
 export default RideDetails;
+
+const RideStatusTimeline = ({ currentStatus }: { currentStatus: string }) => {
+  const statuses = [
+    "REQUESTED",
+    "ACCEPTED",
+    "PICKED_UP",
+    "IN_TRANSIT",
+    "COMPLETED",
+  ];
+
+  return (
+    <div className="flex items-center justify-between mt-4 relative">
+      {statuses.map((status, idx) => {
+        const isActive = statuses.indexOf(currentStatus) >= idx;
+
+        return (
+          <div
+            key={status}
+            className="flex flex-col items-center flex-1 relative"
+          >
+            {/* Animated Circle */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: isActive ? 1 : 0.8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold
+                ${
+                  isActive
+                    ? "bg-primary text-white"
+                    : "bg-gray-200 text-gray-500"
+                }`}
+            >
+              {idx + 1}
+            </motion.div>
+
+            {/* Animated Label */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`mt-2 text-xs font-medium text-center ${
+                isActive ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              {status.replace("_", " ")}
+            </motion.p>
+
+            {/* Animated Connector Line */}
+            {idx < statuses.length - 1 && (
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                className={`h-1 -mt-5 ${
+                  isActive ? "bg-primary" : "bg-gray-300"
+                }`}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};

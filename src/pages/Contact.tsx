@@ -9,11 +9,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { scrollToTop } from "@/hooks/scroll";
 import { Clock, Mail, MapPin, MessageSquare, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const Contact = () => {
+  scrollToTop();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,7 +46,6 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Basic validation
     if (
       !formData.name ||
       !formData.email ||
@@ -50,7 +57,6 @@ const Contact = () => {
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast("Please enter a valid email address.");
@@ -58,13 +64,10 @@ const Contact = () => {
       return;
     }
 
-    // Simulate form submission
     setTimeout(() => {
       toast(
         "Thank you for contacting us. We'll get back to you within 24 hours."
       );
-
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -129,7 +132,13 @@ const Contact = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-b from-muted/50 to-background">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        variants={fadeUp}
+        transition={{ duration: 0.8 }}
+        className="pt-24 pb-16 bg-gradient-to-b from-primary/15 to-background"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-foreground sm:text-5xl lg:text-6xl mb-6">
@@ -141,14 +150,19 @@ const Contact = () => {
             </p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Contact Form & Info */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
-            <div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              variants={fadeUp}
+              transition={{ duration: 0.8 }}
+            >
               <Card>
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center">
@@ -168,7 +182,6 @@ const Contact = () => {
                         <Input
                           id="name"
                           name="name"
-                          type="text"
                           value={formData.name}
                           onChange={handleInputChange}
                           placeholder="Enter your full name"
@@ -240,57 +253,72 @@ const Contact = () => {
                         "Sending..."
                       ) : (
                         <>
-                          <Send className="w-4 h-4 mr-2" />
-                          Send Message
+                          <Send className="w-4 h-4 mr-2" /> Send Message
                         </>
                       )}
                     </Button>
                   </form>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
 
             {/* Contact Information */}
-            <div className="space-y-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              variants={fadeUp}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="space-y-8"
+            >
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">
                   Get in Touch
                 </h2>
                 <div className="grid grid-cols-1 gap-6">
                   {contactInfo.map((info, index) => (
-                    <Card
+                    <motion.div
                       key={index}
-                      className="hover:shadow-lg transition-shadow"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
                     >
-                      <CardHeader>
-                        <div className="flex items-start space-x-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                            {info.icon}
+                      <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader>
+                          <div className="flex items-start space-x-4">
+                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                              {info.icon}
+                            </div>
+                            <div>
+                              <CardTitle className="text-lg">
+                                {info.title}
+                              </CardTitle>
+                              <p className="text-primary font-medium">
+                                {info.details}
+                              </p>
+                              <CardDescription className="mt-2">
+                                {info.description}
+                              </CardDescription>
+                            </div>
                           </div>
-                          <div>
-                            <CardTitle className="text-lg">
-                              {info.title}
-                            </CardTitle>
-                            <p className="text-primary font-medium">
-                              {info.details}
-                            </p>
-                            <CardDescription className="mt-2">
-                              {info.description}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                    </Card>
+                        </CardHeader>
+                      </Card>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Support Types */}
-      <section className="py-20 bg-muted/50">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        variants={fadeUp}
+        transition={{ duration: 0.8 }}
+        className="py-20 bg-muted/50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
@@ -302,26 +330,36 @@ const Contact = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {supportTypes.map((type, index) => (
-              <Card
+              <motion.div
                 key={index}
-                className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <CardHeader>
-                  <CardTitle className="text-xl">{type.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {type.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+                <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardHeader>
+                    <CardTitle className="text-xl">{type.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base">
+                      {type.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Emergency Support */}
-      <section className="py-20 bg-primary">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        variants={fadeUp}
+        transition={{ duration: 0.8 }}
+        className="py-20 bg-primary"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-primary-foreground sm:text-4xl mb-6">
             Need Emergency Support?
@@ -343,7 +381,7 @@ const Contact = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

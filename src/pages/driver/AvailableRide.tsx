@@ -1,12 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { scrollToTop } from "@/hooks/scroll";
 import { useGetAvailableRideQuery } from "@/redux/features/ride/riders.api";
 import type { Ride } from "@/types/ride.type";
 import { DollarSign, User } from "lucide-react";
 import { Link } from "react-router";
 
 export default function AvailableRide() {
+  scrollToTop();
   const { data: availableRides, isLoading } =
     useGetAvailableRideQuery(undefined);
 

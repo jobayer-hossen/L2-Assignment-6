@@ -21,6 +21,7 @@ import { adminSidebarItems } from "./adminSidebarItems";
 import { driverSidebarItems } from "./driverSidebarItems";
 import { riderSidebarItems } from "./riderSidebarItems";
 import PickARide from "@/pages/driver/PickARide";
+import Faq from "@/pages/Faq";
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ export const router = createBrowserRouter([
       { path: "about", Component: About },
       { path: "features", Component: Features },
       { path: "contact", Component: Contact },
-      { path: "faq", Component: Features },
+      { path: "faq", Component: Faq },
       { path: "ride-request", Component: withAuth(RequestRidePage, role.rider as TRole) },
       { path: "/ride-details/:rideId", Component: RideDetailsPage },
       { path: "/pick-a-ride", Component: PickARide },

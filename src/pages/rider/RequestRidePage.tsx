@@ -9,6 +9,8 @@ import L from "leaflet";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useEffect } from "react";
 import { useRideRequestMutation } from "@/redux/features/ride/riders.api";
+import { scrollToTop } from "@/hooks/scroll";
+import { Loader2 } from "lucide-react";
 
 // Fix default marker icon in Leaflet
 delete (L.Icon.Default as any).prototype._getIconUrl;
@@ -63,8 +65,17 @@ function LocationPicker({
 }
 
 export default function RideRequestForm() {
+  scrollToTop();
   const { data } = useUserInfoQuery(undefined);
   const [rideRequest, { isLoading }] = useRideRequestMutation();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const {
     register,
@@ -117,7 +128,6 @@ export default function RideRequestForm() {
       toast.success("Ride request submitted successfully!");
       reset({ riderId: payload.riderId });
       reset();
-      
     } catch (err) {
       console.error("❌ API Error:", err);
       toast.error("Failed to submit ride request.");
