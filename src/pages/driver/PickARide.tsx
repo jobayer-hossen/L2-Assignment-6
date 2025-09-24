@@ -56,7 +56,7 @@ export default function PickARide() {
     try {
       await acceptRide(rideId).unwrap();
       toast.success("Ride accepted successfully");
-      navigate(`/ride-details/${rideId}`); 
+      navigate(`/driver/ride-details/${rideId}`); 
     } catch (error) {
       console.error("Failed to accept ride:", error);
       toast.error("Something went wrong");

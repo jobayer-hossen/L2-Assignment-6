@@ -15,7 +15,6 @@ import {
   useLogoutMutation,
   useUserInfoQuery,
 } from "@/redux/features/auth/auth.api";
-import { useDriverInfoQuery } from "@/redux/features/driver/driver.api";
 import { useAppDispatch } from "@/redux/hook";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -46,15 +45,6 @@ export default function Profile() {
               />
               <AvatarFallback>KK</AvatarFallback>
             </Avatar>
-            {/* {userInfo?.data?.role === "DRIVER" && (
-              <span
-                className={`border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 ${
-                  activeStatus ? "bg-emerald-500" : "bg-muted-foreground"
-                } `}
-              >
-                <span className="sr-only">Offline</span>
-              </span>
-            )} */}
           </div>
           <ChevronDownIcon
             size={16}

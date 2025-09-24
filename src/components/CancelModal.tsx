@@ -7,8 +7,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
+import { useRideCancelMutation } from "@/redux/features/driver/driver.api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import {
@@ -20,79 +21,80 @@ import {
   FormMessage,
 } from "./ui/form";
 import type { ReactNode } from "react";
-import { useRideFeedbackMutation } from "@/redux/features/ride/riders.api";
 
-// Zod schema for validation
+
 const feedbackSchema = z.object({
-  feedback: z
+  reason: z
     .string()
-    .min(2, { message: "Feedback is too short" })
-    .max(200, { message: "Feedback is too long" }),
+    .min(2, { message: "Reason is too short" })
+    .max(100, { message: "Reason is too long" }),
 });
-
-type FeedbackFormData = z.infer<typeof feedbackSchema>;
 
 type FeedbackModalProps = {
   children: ReactNode;
   rideId: string;
 };
 
-export default function FeedbackModal({
-  children,
-  rideId,
-}: FeedbackModalProps) {
-  const [giveFeedback, { isLoading }] = useRideFeedbackMutation();
+type FeedbackFormData = z.infer<typeof feedbackSchema>;
+
+export default function CancelModal({ children, rideId }: FeedbackModalProps) {
+  const [rideCancel] = useRideCancelMutation();
 
   const form = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
-    defaultValues: { feedback: "" },
+    defaultValues: { reason: "" },
   });
 
   const onSubmit = async (data: FeedbackFormData) => {
+    if (!data.reason.trim()) {
+      toast.error("Please enter a cancel reason");
+      return;
+    }
+
     try {
-      await giveFeedback({ rideId, feedback: data.feedback }).unwrap();
-      toast.success("Feedback submitted successfully!");
+      await rideCancel({ rideId, cancelReason: data.reason }).unwrap();
+      toast.success("Ride cancelled successfully");
       form.reset();
-    } catch (err: any) {
-      console.error("Failed to submit feedback:", err);
-      // Display proper message if backend sends error.message
-      toast.error(err?.data?.message || "Something went wrong");
+    } catch (error) {
+      console.error("Failed to cancel ride:", error);
+      toast.error("Something went wrong");
     }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">{children}</Button>
+        <Button variant="outline" className="cursor-pointer">
+          {children}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Give Feedback</DialogTitle>
+          <DialogTitle>Why do you want to cancel this ride?</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="feedback"
+              name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Feedback</FormLabel>
+                  <FormLabel>Cancel Reason</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Write your feedback..."
-                      {...field}
+                      placeholder="Enter the reason for cancelling the ride"
                       className="resize-none"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <div className="flex justify-end">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit Feedback"}
-              </Button>
+              <Button type="submit">Send Reason</Button>
             </div>
           </form>
         </Form>

@@ -81,13 +81,13 @@ export default function HeroSection() {
                   </motion.div>
 
                   <motion.div variants={fadeUp(0.8)}>
-                    <Link to="/register">
+                    <Link to="/be-a-driver">
                       <Button
                         size="lg"
                         variant="outline"
                         className="text-lg px-8 py-3 cursor-pointer"
                       >
-                        Become a Partner
+                        Be a Driver
                       </Button>
                     </Link>
                   </motion.div>

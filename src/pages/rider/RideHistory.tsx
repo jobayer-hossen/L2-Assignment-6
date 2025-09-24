@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import FeedBackModal from "@/components/FeedBackModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -19,6 +18,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import CancelModal from "@/components/CancelModal";
+import FeedbackModal from "@/components/FeedBackModal";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleString("en-US", {
@@ -30,7 +31,6 @@ function formatDate(date: string) {
   });
 }
 
-// Helper to truncate long text and show tooltip on hover
 const TruncatedCell = ({
   text,
   maxLength = 30,
@@ -116,6 +116,7 @@ export default function RideHistory() {
               <TableHead className="w-48">Requested At</TableHead>
               <TableHead className="w-32">Status</TableHead>
               <TableHead className="w-56">Timeline</TableHead>
+              <TableHead className="w-64">Feedback</TableHead>
               <TableHead className="w-32 text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -123,7 +124,7 @@ export default function RideHistory() {
             {rides.map((ride: any, index: number) => (
               <TableRow
                 key={ride._id}
-                
+                 onClick={() => window.location.href = `/rider/ride-details/${ride._id}`} 
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
               >
                 <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
@@ -132,13 +133,13 @@ export default function RideHistory() {
                 <TableCell>
                   <TruncatedCell
                     text={ride?.pickupLocation?.address}
-                    maxLength={35}
+                    maxLength={25}
                   />
                 </TableCell>
                 <TableCell>
                   <TruncatedCell
                     text={ride?.destination?.address}
-                    maxLength={35}
+                    maxLength={25}
                   />
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
@@ -180,15 +181,29 @@ export default function RideHistory() {
                     )}
                   </div>
                 </TableCell>
+                <TableCell>
+                  <TruncatedCell
+                    text={ride.feedback}
+                    maxLength={9}
+                  />
+                </TableCell>
 
                 <TableCell>
-                  {["REQUESTED", "ACCEPTED"].includes(ride?.rideStatus) ? (
-                    <FeedBackModal id={ride?._id}>Cancel</FeedBackModal>
-                  ) : (
-                    <Button variant="outline" size="sm" disabled>
-                      No Action
-                    </Button>
+                  {ride?.rideStatus === "REQUESTED" && (
+                    <CancelModal rideId={ride?._id}>Cancel</CancelModal>
                   )}
+
+                  {ride?.rideStatus === "COMPLETED" && (
+                    <FeedbackModal rideId={ride?._id}>Feedback</FeedbackModal>
+                  )}
+
+                  {ride?.rideStatus === "ACCEPTED" ||
+                    ride?.rideStatus === "PICKED_UP" ||
+                    (ride?.rideStatus === "IN_TRANSIT" && (
+                      <Button variant="outline" size="sm" disabled>
+                        No Action
+                      </Button>
+                    ))}
                 </TableCell>
               </TableRow>
             ))}

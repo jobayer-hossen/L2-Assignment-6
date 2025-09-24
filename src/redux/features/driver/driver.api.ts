@@ -2,31 +2,16 @@ import { baseApi } from "@/redux/baseApi";
 
 export const driverApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    vehicleRegister: builder.mutation({
+
+    driverRegister: builder.mutation({
       query: (driverInfo) => ({
-        url: "/driver/register",
+        url: "/drivers/apply-for-driver",
         method: "POST",
         data: driverInfo,
       }),
       invalidatesTags: ["DRIVER"],
     }),
 
-    register: builder.mutation({
-      query: (userInfo) => ({
-        url: "/user/register",
-        method: "POST",
-        data: userInfo,
-      }),
-    }),
-
-    isOnlineStatus: builder.mutation({
-      query: (isOnlineStatus) => ({
-        url: "/driver/status",
-        method: "PATCH",
-        data: isOnlineStatus,
-      }),
-      invalidatesTags: ["DRIVER"],
-    }),
 
     updateLocationStatus: builder.mutation({
       query: (locationStatus) => ({
@@ -39,7 +24,15 @@ export const driverApi = baseApi.injectEndpoints({
 
     driverInfo: builder.query({
       query: () => ({
-        url: "/driver/status",
+        url: "/drivers/me",
+        method: "GET",
+      }),
+      providesTags: ["DRIVER"],
+    }),
+
+    myRideInfo: builder.query({
+      query: () => ({
+        url: "/drivers/completed-ride",
         method: "GET",
       }),
       providesTags: ["DRIVER"],
@@ -91,10 +84,10 @@ export const driverApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useVehicleRegisterMutation,
+  useDriverRegisterMutation,
+  useMyRideInfoQuery,
   useDriverInfoQuery,
   useGetRideByIdForDriverQuery,
-  useIsOnlineStatusMutation,
   useUpdateLocationStatusMutation,
   useAllRideForDriverQuery,
   useRideCancelMutation,

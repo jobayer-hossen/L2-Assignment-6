@@ -118,7 +118,7 @@ export default function Navbar() {
                 Request a Ride
               </Link>
               <Link
-                to="/ride-request"
+                to="/be-a-driver"
                 className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/10"
               >
                 Be a Driver

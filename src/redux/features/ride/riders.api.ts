@@ -27,30 +27,29 @@ export const ridersApi = baseApi.injectEndpoints({
       providesTags: ["RIDER"],
     }),
 
+    rideFeedback: builder.mutation({
+      query: ({ rideId, feedback }) => ({
+        url: `/rides/feedback/${rideId}`,
+        method: "POST",
+        data: { feedback },
+      }),
+      invalidatesTags: ["RIDE"],
+    }),
+
+    getRideByIdForRider: builder.query({
+      query: (id: string) => ({
+        url: `/rides/my-ride/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["RIDE"],
+    }),
+
     getAvailableRide: builder.query({
       query: () => ({
         url: "/rides/available",
         method: "GET",
       }),
       providesTags: ["RIDER"],
-    }),
-
-    rideCancelStatus: builder.mutation({
-      query: ({ reason, id }) => ({
-        url: `rides/${id}/cancel`,
-        method: "PATCH",
-        data: { reason },
-      }),
-      invalidatesTags: ["RIDER"],
-    }),
-
-    rideAcceptStatus: builder.mutation({
-      query: ({ status, id }) => ({
-        url: `rides/${id}/accept`,
-        method: "PATCH",
-        data: { status },
-      }),
-      invalidatesTags: ["RIDER"],
     }),
 
     ridePickupStatus: builder.mutation({
@@ -74,11 +73,11 @@ export const ridersApi = baseApi.injectEndpoints({
 
 export const {
   useRideRequestMutation,
-  useRideCancelStatusMutation,
   useGetRideHistoryQuery,
+  useGetRideByIdForRiderQuery,
   useGetCurrentRideQuery,
   useGetAvailableRideQuery,
   useGetRideByIdQuery,
-  useRideAcceptStatusMutation,
   useRidePickupStatusMutation,
+  useRideFeedbackMutation,
 } = ridersApi;

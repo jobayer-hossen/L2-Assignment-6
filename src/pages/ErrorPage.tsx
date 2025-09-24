@@ -1,40 +1,223 @@
-import { Link } from "react-router";
-import { motion } from "framer-motion";
+import React from 'react';
+import { Link } from 'react-router';
+import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 
-export default function ErrorPage() {
+const ErrorPage: React.FC = () => {
+  // Animation variants with proper typing
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut" as const
+      }
+    }
+  };
+
+  const floatingVariants: Variants = {
+    animate: {
+      y: [0, -20, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut" as const
+      }
+    }
+  };
+
+  const glowVariants: Variants = {
+    animate: {
+      opacity: [0.5, 1, 0.5],
+      scale: [1, 1.1, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut" as const
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-center px-4 sm:px-6 lg:px-8"
-      >
-        {/* Illustration */}
-        <img
-          src="https://undraw.co/api/illustrations/404.svg"
-          alt="Page not found"
-          className="mx-auto mb-8 w-64 sm:w-96"
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center px-4 overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-30"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear" as const
+          }}
         />
+        <motion.div
+          className="absolute bottom-20 right-20 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-30"
+          animate={{
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear" as const
+          }}
+        />
+      </div>
 
-        {/* Error Code */}
-        <h1 className="text-6xl sm:text-7xl font-extrabold text-gray-800 mb-4">
-          404
-        </h1>
-
-        {/* Error Message */}
-        <p className="text-xl sm:text-2xl text-gray-600 mb-8">
-          Oops! The page you are looking for doesn’t exist.
-        </p>
-
-        {/* Return Home Button */}
-        <Link
-          to="/"
-          className="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
+      <motion.div
+        className="relative z-10 text-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* 404 Number */}
+        <motion.div
+          className="relative"
+          variants={floatingVariants}
+          animate="animate"
         >
-          Go Back Home
-        </Link>
+          <motion.h1
+            className="text-9xl md:text-[200px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 select-none"
+            variants={itemVariants}
+          >
+            404
+          </motion.h1>
+          
+          {/* Glow effect behind 404 */}
+          <motion.div
+            className="absolute inset-0 text-9xl md:text-[200px] font-bold text-purple-500 blur-3xl opacity-50 -z-10"
+            variants={glowVariants}
+            animate="animate"
+          >
+            404
+          </motion.div>
+        </motion.div>
+
+        {/* Error message */}
+        <motion.div variants={itemVariants} className="mt-8 space-y-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white">
+            Oops! Page Not Found
+          </h2>
+          <p className="text-lg md:text-xl text-gray-300 max-w-md mx-auto">
+            The page you're looking for seems to have vanished into the digital void.
+          </p>
+        </motion.div>
+
+        {/* Animated icon */}
+        <motion.div
+          variants={itemVariants}
+          className="mt-8 mb-8"
+        >
+          <motion.div
+            className="inline-block"
+            animate={{
+              rotate: [0, 10, -10, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut" as const
+            }}
+          >
+            <svg
+              className="w-24 h-24 mx-auto text-purple-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </motion.div>
+        </motion.div>
+
+        {/* Action buttons */}
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+        >
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-cyan-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              Go Home
+            </Link>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <button
+              onClick={() => window.history.back()}
+              className="inline-flex items-center px-6 py-3 bg-white bg-opacity-10 backdrop-blur-sm text-white font-semibold rounded-full border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Go Back
+            </button>
+          </motion.div>
+        </motion.div>
+
+        {/* Fun fact */}
+        <motion.p
+          variants={itemVariants}
+          className="mt-12 text-sm text-gray-400"
+        >
+          Fun fact: 404 is the HTTP status code for "Not Found"
+        </motion.p>
       </motion.div>
     </div>
   );
-}
+};
+
+export default ErrorPage;

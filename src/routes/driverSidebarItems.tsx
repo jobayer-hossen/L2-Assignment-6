@@ -5,26 +5,26 @@ import VehicleStatus from "@/pages/driver/VehicleStatus";
 import type { ISidebarItem } from "@/types";
 
 export const driverSidebarItems: ISidebarItem[] = [
-  // {
-  //   title: "Dashboard",
-  //   items: [
-  //     {
-  //       title: "Analytics",
-  //       url: "/driver/analytics",
-  //       component: DriverAnalytics,
-  //     },
-  //   ],
-  // },
   {
-    title: "Vehicles",
+    title: "Dashboard",
     items: [
       {
-        title: "Vehicle Status",
-        url: "/driver/status",
+        title: "Analytics",
+        url: "/driver/analytics",
         component: VehicleStatus,
       },
     ],
   },
+  // {
+  //   title: "Vehicles",
+  //   items: [
+  //     {
+  //       title: "Vehicle Status",
+  //       url: "/driver/vehicle-status",
+  //       component: VehicleStatus,
+  //     },
+  //   ],
+  // },
   {
     title: "Rides",
     items: [

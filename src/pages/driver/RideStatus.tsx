@@ -1,259 +1,117 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import {
-  useDriverInfoQuery,
-  useIsOnlineStatusMutation,
-  useUpdateLocationStatusMutation,
-} from "@/redux/features/driver/driver.api";
-import { useGetAvailableRideQuery } from "@/redux/features/ride/riders.api";
+import { Badge } from "@/components/ui/badge";
+import { useMyRideInfoQuery } from "@/redux/features/driver/driver.api";
+import { MapPin, Flag, Car, CheckCircle, XCircle } from "lucide-react";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Power } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
+function formatDate(date?: string) {
+  if (!date) return "N/A";
+  return new Date(date).toLocaleString();
+}
 
-// Online status schema
-const onlineStatusSchema = z.object({
-  isOnline: z.boolean(),
-});
+export default function CompletedRides() {
+  const { data: rideData, isLoading } = useMyRideInfoQuery(undefined);
 
-// Location update schema
-const locationSchema = z.object({
-  location: z.object({
-    lat: z.number().min(-90).max(90, "Latitude must be between -90 and 90"),
-    lng: z
-      .number()
-      .min(-180)
-      .max(180, "Longitude must be between -180 and 180"),
-  }),
-});
-
-type OnlineStatusFormData = z.infer<typeof onlineStatusSchema>;
-type LocationFormData = z.infer<typeof locationSchema>;
-
-export default function DriverFeatures() {
-  const { data, isLoading } = useGetAvailableRideQuery(undefined);
-  const [isOnlineActiveStatus] = useIsOnlineStatusMutation();
-  const { data: driverInfo } = useDriverInfoQuery(undefined);
-  const [updateLocation] = useUpdateLocationStatusMutation();
-
-  // available ride -> ride details ->
-
-  // Online status form
-  const onlineStatusForm = useForm<OnlineStatusFormData>({
-    resolver: zodResolver(onlineStatusSchema),
-    defaultValues: {
-      isOnline: false,
-    },
-  });
-
-  // Location form
-  const locationForm = useForm<LocationFormData>({
-    resolver: zodResolver(locationSchema),
-    defaultValues: {
-      location: {
-        lat: 23.8103,
-        lng: 90.4125,
-      },
-    },
-  });
-
-  useEffect(() => {
-    if (driverInfo?.data?.[0]?.isOnline !== undefined) {
-      onlineStatusForm.reset({
-        isOnline: driverInfo.data[0].isOnline,
-      });
-    }
-    locationForm.reset({
-      location: {
-        lat: driverInfo?.data?.[0]?.location?.lat,
-        lng: driverInfo?.data?.[0]?.location?.lng,
-      },
-    });
-  }, [driverInfo, onlineStatusForm, locationForm]);
-
-  /* Online Status Submit */
-  const onOnlineStatusSubmit = async (data: OnlineStatusFormData) => {
-    try {
-      const toastId = toast.loading("Status updating...");
-      await isOnlineActiveStatus(data).unwrap();
-      toast.success(
-        `Your status has been updated ${data.isOnline ? "Online" : "Offline"}`,
-        {
-          id: toastId,
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onLocationSubmit = async (data: LocationFormData) => {
-    try {
-      const toastId = toast.loading("Status updating...");
-      await updateLocation(data).unwrap();
-      toast.success("You location updated successfully....", { id: toastId });
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
-    }
-  };
-
-  if (isLoading && !data) <Skeleton />;
+  if (isLoading)
+    return (
+      <p className="text-center mt-8 text-gray-500">Loading completed rides...</p>
+    );
+  if (!rideData?.data || rideData.data.length === 0)
+    return <p className="text-center mt-8 text-gray-500">No completed rides found.</p>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Driver Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your ride status, availability, and location
-            </p>
+    <div className="container mx-auto py-8 space-y-6">
+      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
+        Rides
+      </h2>
+
+      {rideData.data.map((ride: any, index: number) => (
+        <div
+          key={ride._id}
+          className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 hover:shadow-xl transition-shadow border border-gray-200 dark:border-gray-700"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Ride #{index + 1}
+            </h3>
+            <Badge
+              variant={
+                ride.rideStatus === "COMPLETED"
+                  ? "secondary"
+                  : ride.rideStatus === "CANCELLED"
+                  ? "destructive"
+                  : "default"
+              }
+            >
+              {ride.rideStatus}
+            </Badge>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-            {/* Online Status Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Power className="h-5 w-5 text-primary" />
-                  Availability
-                </CardTitle>
-                <CardDescription>
-                  Toggle your online/offline status
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...onlineStatusForm}>
-                  <form
-                    onSubmit={onlineStatusForm.handleSubmit(
-                      onOnlineStatusSubmit
-                    )}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={onlineStatusForm.control}
-                      name="isOnline"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel className="text-base">
-                              Online Status
-                            </FormLabel>
-                            <div className="text-sm text-muted-foreground">
-                              {field.value
-                                ? "You are currently online"
-                                : "You are currently offline"}
-                            </div>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full">
-                      Update Availability
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-
-            {/* Location Update Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  Location
-                </CardTitle>
-                <CardDescription>
-                  Update your current location coordinates
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...locationForm}>
-                  <form
-                    onSubmit={locationForm.handleSubmit(onLocationSubmit)}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={locationForm.control}
-                      name="location.lat"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Latitude</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="any"
-                              placeholder="23.8103"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={locationForm.control}
-                      name="location.lng"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Longitude</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="any"
-                              placeholder="90.4125"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full">
-                      Update Location
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+          {/* Locations */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="flex items-start gap-2">
+              <MapPin className="text-green-500 w-5 h-5 mt-1" />
+              <div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">
+                  Pickup
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {ride.pickupLocation?.address || "N/A"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <Flag className="text-red-500 w-5 h-5 mt-1" />
+              <div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">
+                  Destination
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {ride.destination?.address || "N/A"}
+                </p>
+              </div>
+            </div>
           </div>
+
+          {/* Timeline */}
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4 space-x-4">
+            <div className="flex-1 flex flex-col items-center gap-1">
+              <p className="flex items-center gap-1">
+                <span>📩</span> Requested
+              </p>
+              <span>{formatDate(ride.timestampsLog?.requestedAt)}</span>
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-1">
+              <p className="flex items-center gap-1">
+                <Car /> Accepted
+              </p>
+              <span>{formatDate(ride.timestampsLog?.acceptedAt)}</span>
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-1">
+              <p className="flex items-center gap-1">
+                <Car /> Picked Up
+              </p>
+              <span>{formatDate(ride.timestampsLog?.pickedUpAt)}</span>
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-1">
+              <p className="flex items-center gap-1">
+                <CheckCircle className="text-green-500 w-4 h-4" /> Completed
+              </p>
+              <span>{formatDate(ride.timestampsLog?.completedAt)}</span>
+            </div>
+          </div>
+
+          {/* Cancel Info */}
+          {ride.cancelReason && (
+            <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
+              <XCircle className="w-5 h-5 mt-1" />
+              <p>
+                <strong>Cancelled:</strong> {ride.cancelReason} <br />
+                <strong>By:</strong> {ride.cancelledBy}
+              </p>
+            </div>
+          )}
         </div>
-      </main>
+      ))}
     </div>
   );
 }

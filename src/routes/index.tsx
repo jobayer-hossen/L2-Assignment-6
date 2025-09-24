@@ -8,7 +8,7 @@ import ErrorPage from "@/pages/ErrorPage";
 import Features from "@/pages/Features";
 
 import { role } from "@/constant/role";
-import VehicleRegistration from "@/pages/driver/VehiclesRegistration";
+import VehicleRegistration from "@/pages/driver/DriverRegistration";
 import Home from "@/pages/Home";
 import RequestRidePage from "@/pages/rider/RequestRidePage";
 
@@ -22,6 +22,7 @@ import { driverSidebarItems } from "./driverSidebarItems";
 import { riderSidebarItems } from "./riderSidebarItems";
 import PickARide from "@/pages/driver/PickARide";
 import Faq from "@/pages/Faq";
+import RideDetailsRider from "@/pages/rider/RideDetailsRider";
 
 export const router = createBrowserRouter([
   {
@@ -34,10 +35,17 @@ export const router = createBrowserRouter([
       { path: "features", Component: Features },
       { path: "contact", Component: Contact },
       { path: "faq", Component: Faq },
-      { path: "ride-request", Component: withAuth(RequestRidePage, role.rider as TRole) },
-      { path: "/ride-details/:rideId", Component: RideDetailsPage },
+      {
+        path: "ride-request",
+        Component: withAuth(RequestRidePage, role.rider as TRole),
+      },
+      { path: "/driver/ride-details/:rideId", Component: RideDetailsPage },
+      { path: "/rider/ride-details/:rideId", Component: RideDetailsRider },
       { path: "/pick-a-ride", Component: PickARide },
-      { path: "/be-a-driver", Component: VehicleRegistration },
+      {
+        path: "/be-a-driver",
+        Component: withAuth(VehicleRegistration, role.rider as TRole),
+      },
     ],
   },
   {
