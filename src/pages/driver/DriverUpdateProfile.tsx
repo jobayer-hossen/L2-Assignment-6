@@ -39,6 +39,10 @@ const registerSchema = z
     confirmPassword: z
       .string()
       .min(8, { error: "Confirm Password is too short" }),
+    phone: z.string().regex(/^(?:\+8801\d{9}|01\d{9})$/, {
+      message:
+        "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Password do not match",
@@ -52,13 +56,12 @@ export default function DriverUpdateProfile({
   const { data: userInfo } = useUserInfoQuery(undefined);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
-  //   console.log(userInfo?.data?._id);
-
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -69,6 +72,7 @@ export default function DriverUpdateProfile({
       form.reset({
         name: userInfo.data.name,
         email: userInfo.data.email,
+        phone: userInfo.data.phone,
         password: "",
         confirmPassword: "",
       });
@@ -79,6 +83,7 @@ export default function DriverUpdateProfile({
     const updateUserInfo = {
       name: data.name,
       password: data.password,
+      phone: data.phone,
       id: userInfo?.data?._id,
     };
 
@@ -97,7 +102,7 @@ export default function DriverUpdateProfile({
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Update your Profile</h1>
+        <h1 className="text-2xl font-bold">Update Driver Profile</h1>
         <p className="text-sm text-muted-foreground">
           Enter your details to update your Profile
         </p>
@@ -134,6 +139,23 @@ export default function DriverUpdateProfile({
                   <FormDescription className="sr-only">
                     This is your public display name.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="+8801XXXXXXXXX"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -23,6 +23,7 @@ import { riderSidebarItems } from "./riderSidebarItems";
 import PickARide from "@/pages/driver/PickARide";
 import Faq from "@/pages/Faq";
 import RideDetailsRider from "@/pages/rider/RideDetailsRider";
+import VerifyOtpForm from "@/components/modules/authentication/VerifyOtpForm";
 
 export const router = createBrowserRouter([
   {
@@ -94,5 +95,9 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     Component: SignUp,
+  },
+  {
+    path: "/verify",
+    Component: VerifyOtpForm,
   },
 ]);

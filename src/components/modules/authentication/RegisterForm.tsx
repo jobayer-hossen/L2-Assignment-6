@@ -10,16 +10,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Password from "@/components/ui/Password";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
-import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import {
+  useRegisterMutation,
+  useSendOtpMutation,
+} from "@/redux/features/auth/auth.api";
 import isApiErrorResponse from "@/utils/errorGurd";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,24 +30,44 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const registerSchema = z
   .object({
     name: z
-      .string()
-      .min(3, {
-        error: "Name is too short",
+      .string({ message: "Name is required" })
+      .min(2, { message: "Name must be at least 2 characters long." })
+      .max(50, { message: "Name cannot exceed 50 characters." }),
+
+    email: z
+      .string({ message: "Email is required" })
+      .email({ message: "Invalid email address format." })
+      .min(5, { message: "Email must be at least 5 characters long." })
+      .max(100, { message: "Email cannot exceed 100 characters." }),
+
+    role: z.string({ message: "Please select a role to register." }),
+
+    password: z
+      .string({ message: "Password is required" })
+      .min(8, { message: "Password must be at least 8 characters long." })
+      .regex(/^(?=.*[A-Z])/, {
+        message: "Password must contain at least 1 uppercase letter.",
       })
-      .max(50),
+      .regex(/^(?=.*[!@#$%^&*])/, {
+        message: "Password must contain at least 1 special character.",
+      })
+      .regex(/^(?=.*\d)/, {
+        message: "Password must contain at least 1 number.",
+      }),
 
-    email: z.email(),
-    role: z.string({
-      error: "Please select a role to register.",
-    }),
-
-    password: z.string().min(8, { error: "Password is too short" }),
     confirmPassword: z
-      .string()
-      .min(8, { error: "Confirm Password is too short" }),
+      .string({ message: "Confirm Password is required" })
+      .min(8, {
+        message: "Confirm Password must be at least 8 characters long.",
+      }),
+
+    phone: z.string().regex(/^(?:\+8801\d{9}|01\d{9})$/, {
+      message:
+        "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password do not match",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
@@ -60,13 +76,13 @@ export function RegisterForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
-
+  const [sendOtp] = useSendOtpMutation();
   const [register, { isLoading }] = useRegisterMutation();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: "",
+      role: "RIDER",
       name: "",
       email: "",
       password: "",
@@ -79,19 +95,19 @@ export function RegisterForm({
       role: data.role,
       name: data.name,
       email: data.email,
+      phone: data.phone,
       password: data.password,
     };
 
     try {
       await register(userInfo).unwrap();
+      await sendOtp({ email: data.email, name: data.name }).unwrap();
       toast.success("User created successfully");
-      navigate("/");
+      navigate("/verify", { state: { email: data.email , name: data.name } });
     } catch (error) {
       if (isApiErrorResponse(error)) {
-        // TypeScript now knows that `error` has `data` and `message`
         toast.error(error.data.message);
       } else {
-        // Handle other types of errors, like network errors
         toast.error("An unexpected error occurred");
       }
     }
@@ -111,30 +127,6 @@ export function RegisterForm({
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Register As</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="rider">Rider</SelectItem>
-                      <SelectItem value="driver">Driver</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="name"
@@ -163,6 +155,23 @@ export function RegisterForm({
                   <FormDescription className="sr-only">
                     This is your public display name.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="+8801XXXXXXXXX"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

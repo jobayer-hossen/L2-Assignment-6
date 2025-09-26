@@ -11,13 +11,6 @@ export const ridersApi = baseApi.injectEndpoints({
       invalidatesTags: ["RIDER"],
     }),
 
-    getCurrentRide: builder.query({
-      query: (id) => ({
-        url: `/${id}/history`,
-        method: "GET",
-      }),
-      providesTags: ["RIDER"],
-    }),
 
     getRideHistory: builder.query({
       query: () => ({
@@ -75,7 +68,6 @@ export const {
   useRideRequestMutation,
   useGetRideHistoryQuery,
   useGetRideByIdForRiderQuery,
-  useGetCurrentRideQuery,
   useGetAvailableRideQuery,
   useGetRideByIdQuery,
   useRidePickupStatusMutation,

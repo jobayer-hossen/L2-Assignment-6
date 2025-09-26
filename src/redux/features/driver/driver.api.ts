@@ -2,7 +2,6 @@ import { baseApi } from "@/redux/baseApi";
 
 export const driverApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     driverRegister: builder.mutation({
       query: (driverInfo) => ({
         url: "/drivers/apply-for-driver",
@@ -11,7 +10,6 @@ export const driverApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["DRIVER"],
     }),
-
 
     updateLocationStatus: builder.mutation({
       query: (locationStatus) => ({
@@ -71,6 +69,23 @@ export const driverApi = baseApi.injectEndpoints({
       providesTags: ["RIDE"],
     }),
 
+    driverVehicleInfo: builder.query({
+      query: () => ({
+        url: "/drivers/me",
+        method: "GET",
+      }),
+      providesTags: ["USER"],
+    }),
+
+      driverVehicleUpdate: builder.mutation({
+      query: (updateData) => ({
+        url: "/drivers/update-my-driver-profile",
+        method: "PATCH",
+        data: updateData,
+      }),
+      invalidatesTags: ["DRIVER"],
+    }),
+
     updateRideStatus: builder.mutation({
       query: ({ id, status }) => ({
         url: `/rides/status/${id}`,
@@ -79,7 +94,6 @@ export const driverApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["RIDE"],
     }),
-    
   }),
 });
 
@@ -93,4 +107,6 @@ export const {
   useRideCancelMutation,
   useAcceptRideMutation,
   useUpdateRideStatusMutation,
+  useDriverVehicleInfoQuery,
+  useDriverVehicleUpdateMutation
 } = driverApi;

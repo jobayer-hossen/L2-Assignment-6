@@ -57,7 +57,7 @@ const vehicleRegistrationSchema = z.object({
       .string()
       .min(3, "Plate number must be at least 3 characters"),
     color: z.string().optional(),
-    seats: z.string().optional(), // will convert to number
+    seats: z.string().optional(),
   }),
 });
 
@@ -70,7 +70,6 @@ const DriverRegistration = () => {
   const [driverRegister] = useDriverRegisterMutation();
   const navigate = useNavigate();
 
-  // always call hooks
   const form = useForm<VehicleRegistrationForm>({
     resolver: zodResolver(vehicleRegistrationSchema),
     defaultValues: {
@@ -94,7 +93,6 @@ const DriverRegistration = () => {
     );
   }
 
-  // check role AFTER hooks
   if (data?.data?.role === "DRIVER") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-accent/5">
@@ -141,7 +139,7 @@ const DriverRegistration = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <Card className="border-border/50 shadow-lg">
+          <Card className="shadow-lg border-3 border-primary">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl text-center">
                 Vehicle Information
