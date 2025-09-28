@@ -52,7 +52,6 @@ export default function UpdateAdminProfile({
   const { data: userInfo } = useUserInfoQuery(undefined);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
-  //   console.log(userInfo?.data?._id);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -87,7 +86,6 @@ export default function UpdateAdminProfile({
       toast.success("User Update successfully");
     } catch (error) {
       console.log(error);
-      //   toast.error(`${error?.data?.message}`);
     }
   };
 

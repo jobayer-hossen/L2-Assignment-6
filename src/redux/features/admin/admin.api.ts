@@ -78,13 +78,12 @@ export const adminApi = baseApi.injectEndpoints({
       invalidatesTags: ["DRIVER"],
     }),
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    deleteUser: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `users/${id}/delete`,
-        method: "DELETE",
+    getRideAllDetailsForAdmin: builder.query({
+      query: () => ({
+        url: `/rides/all-ride-admin`,
+        method: "GET",
       }),
-      invalidatesTags: ["USER"],
+      providesTags: ["RIDE"],
     }),
   }),
 });
@@ -94,9 +93,9 @@ export const {
   useAllStatsQuery,
   useAllRidesQuery,
   useUpdateRideStatusMutation,
-  useDeleteUserMutation,
   useViewRideDetailsQuery,
   useUpdateUserStatusMutation,
   useAllDriversQuery,
   useUpdateDriverApprovalStatusMutation,
+  useGetRideAllDetailsForAdminQuery
 } = adminApi;

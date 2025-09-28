@@ -18,9 +18,7 @@ import {
 import { getSidebarItems } from "@/utils/getSidebarItems";
 import * as React from "react";
 import { Link } from "react-router";
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { LogOutIcon } from "lucide-react";
-import { useDriverInfoQuery } from "@/redux/features/driver/driver.api";
 import { useAppDispatch } from "@/redux/hook";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
@@ -33,9 +31,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const [logout] = useLogoutMutation();
-  // const { data: userInfo } = useUserInfoQuery(undefined);
-  // const { data: driverInfo } = useDriverInfoQuery(undefined);
-  // const activeStatus = driverInfo?.data[0]?.isOnline;
 
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
@@ -59,7 +54,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>

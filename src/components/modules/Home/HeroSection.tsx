@@ -7,7 +7,6 @@ import Lottie from "lottie-react";
 
 import rideAnimation from "../../../../src/assets/Car Trip.json";
 
-// Reusable fadeUp animation with delay
 const fadeUp = (delay = 0) => ({
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { delay, duration: 0.8 } },
@@ -101,9 +100,9 @@ export default function HeroSection() {
               className="mt-12 grid grid-cols-3 gap-8"
             >
               {[
-                { value: "2M+", label: "Rides Completed" },
-                { value: "80K+", label: "Drivers Onboard" },
-                { value: "4.95★", label: "User Satisfaction" },
+                { value: "2M", label: "Rides Completed" },
+                { value: "80K", label: "Drivers Onboard" },
+                { value: "4.95", label: "User Satisfaction" },
               ].map((stat, i) => (
                 <motion.div
                   key={i}

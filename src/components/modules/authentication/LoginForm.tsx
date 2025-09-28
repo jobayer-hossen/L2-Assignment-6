@@ -54,10 +54,8 @@ export function LoginForm({
       }
     } catch (error) {
       if (isApiErrorResponse(error)) {
-        // TypeScript now knows that `error` has `data` and `message`
         toast.error(error.data.message);
       } else {
-        // Handle other types of errors, like network errors
         toast.error("An unexpected error occurred");
       }
     }

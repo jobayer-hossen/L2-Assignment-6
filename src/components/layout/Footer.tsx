@@ -1,4 +1,4 @@
-import { Car, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 
@@ -15,12 +15,39 @@ export default function Footer() {
         >
           {/* Brand & Contact */}
           <div className="md:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <img
-                src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
-                alt="logo"
-                className="w-[40px]"
-              />
+            <Link
+              to="/"
+              className="text-2xl flex items-center gap-3 font-bold text-primary dark:text-primary-light hover:text-primary/90 transition group relative"
+            >
+              <motion.div
+                className="relative"
+                animate={{
+                  x: [0, 10, 0, -10, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <motion.img
+                  src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+                  alt="logo"
+                  className="w-[40px]"
+                  animate={{
+                    rotate: [-2, 2, -2],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  whileHover={{
+                    scale: 1.15,
+                    transition: { duration: 0.2 },
+                  }}
+                />
+              </motion.div>
               <span className="font-bold text-2xl text-gray-900 dark:text-white">
                 LoopRide
               </span>

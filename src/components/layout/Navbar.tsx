@@ -15,6 +15,7 @@ import { Link } from "react-router";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { ModeToggle } from "./mode-toggle";
 import Profile from "./Profile";
+import { motion } from "framer-motion";
 
 const navigationLinks = [
   { href: "/", label: "Home" },
@@ -84,11 +85,43 @@ export default function Navbar() {
           </Popover>
 
           {/* Logo */}
+
           <Link
             to="/"
-            className="text-2xl flex items-center gap-2 font-bold text-primary dark:text-primary-light hover:text-primary/90 transition"
+            className="text-2xl flex items-center gap-3 font-bold text-primary dark:text-primary-light hover:text-primary/90 transition group relative"
           >
-           <img src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927" alt="logo" className="w-[40px]"/> LoopRide
+            <motion.div
+              className="relative"
+              animate={{
+                x: [0, 10, 0, -10, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <motion.img
+                src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+                alt="logo"
+                className="w-[40px]"
+                animate={{
+                  rotate: [-2, 2, -2],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                whileHover={{
+                  scale: 1.15,
+                  transition: { duration: 0.2 },
+                }}
+              />
+            </motion.div>
+            <span className=" transition-all duration-300">
+              LoopRide
+            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -125,16 +158,17 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          {data?.data?.role === "ADMIN" || data?.data?.role === "SUPER_ADMIN" && (
-            <>
-              <Link
-                to="/admin/analytics"
-                className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
-              >
-               Dashboard
-              </Link>
-            </>
-          )}
+          {data?.data?.role === "ADMIN" ||
+            (data?.data?.role === "SUPER_ADMIN" && (
+              <>
+                <Link
+                  to="/admin/analytics"
+                  className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
+                >
+                  Dashboard
+                </Link>
+              </>
+            ))}
 
           {data?.data?.role === "DRIVER" && (
             <>
@@ -142,11 +176,10 @@ export default function Navbar() {
                 to="/pick-a-ride"
                 className="font-medium py-1.5 px-2 rounded hover:bg-primary/50 transition bg-primary/30"
               >
-               Pick a ride
+                Pick a ride
               </Link>
             </>
           )}
-
         </div>
 
         {/* Right side */}

@@ -24,6 +24,7 @@ import PickARide from "@/pages/driver/PickARide";
 import Faq from "@/pages/Faq";
 import RideDetailsRider from "@/pages/rider/RideDetailsRider";
 import VerifyOtpForm from "@/components/modules/authentication/VerifyOtpForm";
+import RideDetailsAdmin from "@/pages/admin/RideDetailsAdmin";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       },
       { path: "/driver/ride-details/:rideId", Component: RideDetailsPage },
       { path: "/rider/ride-details/:rideId", Component: RideDetailsRider },
+      { path: "/admin/ride-details/", Component: RideDetailsAdmin },
       { path: "/pick-a-ride", Component: PickARide },
       {
         path: "/be-a-driver",

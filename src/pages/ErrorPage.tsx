@@ -1,19 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router';
-import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import React from "react";
+import { Link } from "react-router";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 const ErrorPage: React.FC = () => {
-  // Animation variants with proper typing
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         duration: 0.5,
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants: Variants = {
@@ -23,9 +22,9 @@ const ErrorPage: React.FC = () => {
       opacity: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut" as const
-      }
-    }
+        ease: "easeOut" as const,
+      },
+    },
   };
 
   const floatingVariants: Variants = {
@@ -34,9 +33,9 @@ const ErrorPage: React.FC = () => {
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut" as const
-      }
-    }
+        ease: "easeInOut" as const,
+      },
+    },
   };
 
   const glowVariants: Variants = {
@@ -46,13 +45,13 @@ const ErrorPage: React.FC = () => {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut" as const
-      }
-    }
+        ease: "easeInOut" as const,
+      },
+    },
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center px-4 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4 overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -64,7 +63,7 @@ const ErrorPage: React.FC = () => {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear" as const
+            ease: "linear" as const,
           }}
         />
         <motion.div
@@ -76,7 +75,7 @@ const ErrorPage: React.FC = () => {
           transition={{
             duration: 15,
             repeat: Infinity,
-            ease: "linear" as const
+            ease: "linear" as const,
           }}
         />
       </div>
@@ -99,7 +98,7 @@ const ErrorPage: React.FC = () => {
           >
             404
           </motion.h1>
-          
+
           {/* Glow effect behind 404 */}
           <motion.div
             className="absolute inset-0 text-9xl md:text-[200px] font-bold text-purple-500 blur-3xl opacity-50 -z-10"
@@ -116,15 +115,13 @@ const ErrorPage: React.FC = () => {
             Oops! Page Not Found
           </h2>
           <p className="text-lg md:text-xl text-gray-300 max-w-md mx-auto">
-            The page you're looking for seems to have vanished into the digital void.
+            The page you're looking for seems to have vanished into the digital
+            void.
           </p>
         </motion.div>
 
         {/* Animated icon */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-8 mb-8"
-        >
+        {/* <motion.div variants={itemVariants} className="mt-8">
           <motion.div
             className="inline-block"
             animate={{
@@ -133,11 +130,11 @@ const ErrorPage: React.FC = () => {
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut" as const
+              ease: "easeInOut" as const,
             }}
           >
             <svg
-              className="w-24 h-24 mx-auto text-purple-400"
+              className="w-24 h-24 mx-auto text-primary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -150,20 +147,55 @@ const ErrorPage: React.FC = () => {
               />
             </svg>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
+
+        <div className="w-full justify-items-center py-8">
+          <Link
+            to="/"
+            className="text-2xl flex items-center gap-3 font-bold text-primary dark:text-primary-light hover:text-primary/90 transition group relative"
+          >
+            <motion.div
+              className="relative"
+              animate={{
+                x: [0, 10, 0, -10, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <motion.img
+                src="https://cdn-icons-png.freepik.com/512/10028/10028767.png?ga=GA1.1.1697682617.1758554927"
+                alt="logo"
+                className="w-[40px]"
+                animate={{
+                  rotate: [-2, 2, -2],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                whileHover={{
+                  scale: 1.15,
+                  transition: { duration: 0.2 },
+                }}
+              />
+            </motion.div>
+            <span className=" transition-all duration-300">LoopRide</span>
+          </Link>
+        </div>
 
         {/* Action buttons */}
         <motion.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               to="/"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-cyan-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="inline-flex items-center px-6 py-3 bg-primary/75 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -180,31 +212,6 @@ const ErrorPage: React.FC = () => {
               </svg>
               Go Home
             </Link>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <button
-              onClick={() => window.history.back()}
-              className="inline-flex items-center px-6 py-3 bg-white bg-opacity-10 backdrop-blur-sm text-white font-semibold rounded-full border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Go Back
-            </button>
           </motion.div>
         </motion.div>
 

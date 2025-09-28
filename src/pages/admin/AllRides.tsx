@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -20,19 +19,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { Loader2, MapPin, Clock, User } from "lucide-react";
+import { MapPin, Clock, User } from "lucide-react";
 import {
   useAllRidesQuery,
   useUpdateRideStatusMutation,
 } from "@/redux/features/admin/admin.api";
 
 export default function AllRides() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [search] = useState("");
+  const [statusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // ✅ fetch rides from API
   const { data, isLoading } = useAllRidesQuery({
     searchTerm: search,
     status: statusFilter !== "all" ? statusFilter : undefined,
@@ -40,14 +38,11 @@ export default function AllRides() {
     limit,
   });
 
-  // ✅ mutation for updating ride status
-  const [updateRideStatus, { isLoading: updating }] =
-    useUpdateRideStatusMutation();
+  const [updateRideStatus] = useUpdateRideStatusMutation();
 
   const rides = data?.data.data || [];
   const meta = data?.data.meta || { page: 1, totalPage: 1, total: 0 };
 
-  // filter logic (optional, since backend can filter too)
   const filteredRides = useMemo(() => {
     return rides.filter((ride: any) => {
       const matchesSearch =
@@ -89,7 +84,6 @@ export default function AllRides() {
     return `${formatDistanceToNow(date, { addSuffix: true })}`;
   };
 
-  // ✅ handler to update ride status
   const handleStatusChange = async (rideId: string, newStatus: string) => {
     try {
       await updateRideStatus({ id: rideId, rideStatus: newStatus }).unwrap();
@@ -158,13 +152,28 @@ export default function AllRides() {
                     <TableCell className="font-mono text-sm text-gray-500">
                       {(page - 1) * limit + index + 1}
                     </TableCell>
-                    <TableCell className="text-xs font-mono text-blue-600">
+                    <TableCell
+                      onClick={() =>
+                        (window.location.href = `/admin/ride-details/`)
+                      }
+                      className="text-xs font-mono text-blue-600"
+                    >
                       {ride.riderId?.slice(-6)}
                     </TableCell>
-                    <TableCell className="text-xs font-mono text-purple-600">
+                    <TableCell
+                      onClick={() =>
+                        (window.location.href = `/admin/ride-details`)
+                      }
+                      className="text-xs font-mono text-purple-600"
+                    >
                       {ride.driverId?.slice(-6)}
                     </TableCell>
-                    <TableCell className="text-sm max-w-xs">
+                    <TableCell
+                      onClick={() =>
+                        (window.location.href = `/admin/ride-details`)
+                      }
+                      className="text-sm max-w-xs"
+                    >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-start gap-1">
                           <MapPin className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />

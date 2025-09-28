@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from "axios";
 import { toast } from "sonner";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,7 +11,7 @@ import { useRideRequestMutation } from "@/redux/features/ride/riders.api";
 import { scrollToTop } from "@/hooks/scroll";
 import { Loader2 } from "lucide-react";
 
-// Fix default marker icon in Leaflet
+
 delete (L.Icon.Default as any).prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl:
@@ -36,7 +35,6 @@ const createRideZodSchema = z.object({
   }),
 });
 
-// Reverse geocoding helper
 async function getAddressFromCoords(lat: number, lng: number) {
   try {
     const res = await fetch(
@@ -50,7 +48,6 @@ async function getAddressFromCoords(lat: number, lng: number) {
   }
 }
 
-// Helper for picking coordinates
 function LocationPicker({
   onSelect,
 }: {

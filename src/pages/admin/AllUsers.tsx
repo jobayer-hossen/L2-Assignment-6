@@ -11,7 +11,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { DeleteConfirmation } from "@/components/ui/DeleteConfiramtion";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -24,26 +23,18 @@ import {
 } from "@/components/ui/table";
 import {
   useAllUsersQuery,
-  useDeleteUserMutation,
   useUpdateUserStatusMutation,
 } from "@/redux/features/admin/admin.api";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
-import { Trash2, UserX, UserCheck, Loader2 } from "lucide-react";
+
+import { UserX, UserCheck, Loader2 } from "lucide-react";
 
 export default function AllUsers() {
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [roleFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const { data, isLoading, error } = useAllUsersQuery({
@@ -53,27 +44,10 @@ export default function AllUsers() {
     limit: 10,
   });
 
-  const [deleteUser] = useDeleteUserMutation();
   const [updateActiveStatus] = useUpdateUserStatusMutation();
 
   const users = data?.data || [];
   const meta = data?.meta;
-
-  const handleDelete = useCallback(
-    async (id: string) => {
-      setDeletingId(id);
-      try {
-        await deleteUser(id).unwrap();
-        toast.success("✅ User deleted successfully");
-      } catch (err) {
-        console.error("Failed to delete user:", err);
-        toast.error("❌ Failed to delete user");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [deleteUser]
-  );
 
   const handleBlockUnblock = useCallback(
     async (id: string, currentStatus: string) => {
@@ -257,24 +231,6 @@ export default function AllUsers() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-
-                    {/* Delete Button */}
-                    <DeleteConfirmation
-                      onConfirm={() => handleDelete(user?._id)}
-                    >
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
-                        disabled={deletingId === user._id}
-                      >
-                        {deletingId === user._id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </DeleteConfirmation>
                   </TableCell>
                 </TableRow>
               ))

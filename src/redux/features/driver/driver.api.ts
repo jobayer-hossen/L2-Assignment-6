@@ -11,14 +11,6 @@ export const driverApi = baseApi.injectEndpoints({
       invalidatesTags: ["DRIVER"],
     }),
 
-    updateLocationStatus: builder.mutation({
-      query: (locationStatus) => ({
-        url: "/driver/location",
-        method: "PATCH",
-        data: locationStatus,
-      }),
-      invalidatesTags: ["DRIVER"],
-    }),
 
     driverInfo: builder.query({
       query: () => ({
@@ -102,7 +94,6 @@ export const {
   useMyRideInfoQuery,
   useDriverInfoQuery,
   useGetRideByIdForDriverQuery,
-  useUpdateLocationStatusMutation,
   useAllRideForDriverQuery,
   useRideCancelMutation,
   useAcceptRideMutation,

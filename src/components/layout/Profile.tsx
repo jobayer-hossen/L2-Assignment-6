@@ -23,8 +23,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 export default function Profile() {
   const [logout] = useLogoutMutation();
   const { data: userInfo } = useUserInfoQuery(undefined);
-  // const { data: driverInfo } = useDriverInfoQuery(undefined);
-  // const activeStatus = driverInfo?.data[0]?.isOnline;
 
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
@@ -64,14 +62,6 @@ export default function Profile() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {/* <DropdownMenuItem>
-            <BoltIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Help</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Layers2Icon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Wallet</span>
-          </DropdownMenuItem> */}
 
           {userInfo?.data?.role === "ADMIN" && (
             <Link to="admin">

@@ -69,7 +69,6 @@ export default function RideHistory() {
   const rides = data?.data?.data || [];
   const meta = data?.data?.meta;
 
-  // If loading, show skeleton
   if (isLoading) {
     return (
       <div className="space-y-4 p-6">
@@ -79,7 +78,6 @@ export default function RideHistory() {
     );
   }
 
-  // If no rides
   if (rides.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl">
@@ -124,25 +122,30 @@ export default function RideHistory() {
             {rides.map((ride: any, index: number) => (
               <TableRow
                 key={ride._id}
-                 onClick={() => window.location.href = `/rider/ride-details/${ride._id}`} 
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
               >
                 <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
                   {(page - 1) * 10 + (index + 1)}
                 </TableCell>
-                <TableCell>
+                <TableCell
+                 onClick={() => window.location.href = `/rider/ride-details/${ride._id}`} 
+                >
                   <TruncatedCell
                     text={ride?.pickupLocation?.address}
                     maxLength={25}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell
+                 onClick={() => window.location.href = `/rider/ride-details/${ride._id}`} 
+                >
                   <TruncatedCell
                     text={ride?.destination?.address}
                     maxLength={25}
                   />
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-sm">
+                <TableCell 
+                 onClick={() => window.location.href = `/rider/ride-details/${ride._id}`} 
+                className="whitespace-nowrap text-sm">
                   {formatDate(ride?.timestampsLog?.requestedAt)}
                 </TableCell>
                 <TableCell>
@@ -182,10 +185,7 @@ export default function RideHistory() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <TruncatedCell
-                    text={ride.feedback}
-                    maxLength={9}
-                  />
+                  <TruncatedCell text={ride.feedback} maxLength={9} />
                 </TableCell>
 
                 <TableCell>

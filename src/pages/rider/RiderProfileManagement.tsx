@@ -56,8 +56,6 @@ export default function RiderProfileManagement({
   const { data: userInfo } = useUserInfoQuery(undefined);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
-  //   console.log(userInfo?.data?._id);
-
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {

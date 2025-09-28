@@ -45,15 +45,6 @@ export const ridersApi = baseApi.injectEndpoints({
       providesTags: ["RIDER"],
     }),
 
-    ridePickupStatus: builder.mutation({
-      query: ({ status, id }) => ({
-        url: `rides/${id}/status`,
-        method: "PATCH",
-        data: { status },
-      }),
-      invalidatesTags: ["RIDER"],
-    }),
-
     getRideById: builder.query({
       query: (id: string) => ({
         url: `/rides/${id}`,
@@ -70,6 +61,5 @@ export const {
   useGetRideByIdForRiderQuery,
   useGetAvailableRideQuery,
   useGetRideByIdQuery,
-  useRidePickupStatusMutation,
   useRideFeedbackMutation,
 } = ridersApi;
