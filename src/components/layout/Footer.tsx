@@ -42,10 +42,6 @@ export default function Footer() {
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  whileHover={{
-                    scale: 1.15,
-                    transition: { duration: 0.2 },
-                  }}
                 />
               </motion.div>
               <span className="font-bold text-2xl text-gray-900 dark:text-white">

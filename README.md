@@ -1,14 +1,7 @@
-# 🚖 Ride Management System (Frontend)
+# 🚖 LoopRide
 
 A **production-grade**, fully responsive, and role-based ride booking platform built with **React, Redux Toolkit, RTK Query, and TypeScript**. This frontend application delivers tailored experiences for **Riders**, **Drivers**, and **Admins** with professional UI/UX design and seamless integration with the backend API.
 
-## 🔐 Test Credentials
-
-### Admin Account
-```
-Email: super@gmail.com
-Password: Admin@1234
-```
 
 ## 📋 Project Overview
 
@@ -85,8 +78,8 @@ This comprehensive ride management system provides:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/naeemul-online/ride-sharing-frontend.git
-   cd ride-sharing-frontend
+   git clone https://github.com/jobayer-hossen/L2-Assignment-6
+   cd L2-Assignment-6
    ```
 
 2. **Install Dependencies**
@@ -97,7 +90,7 @@ This comprehensive ride management system provides:
 3. **Environment Configuration**
    Create a `.env` file in the root directory:
    ```env
-   VITE_API_URL=https://ride-sharing-backend-seven.vercel.app/api/v1
+   VITE_API_URL= 'Your backend Live api'
    ```
 
 4. **Development Server**

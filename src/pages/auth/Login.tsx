@@ -34,10 +34,6 @@ export default function Login() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                whileHover={{
-                  scale: 1.15,
-                  transition: { duration: 0.2 },
-                }}
               />
             </motion.div>
             <span className=" transition-all duration-300">
