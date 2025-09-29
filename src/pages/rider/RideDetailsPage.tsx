@@ -15,19 +15,20 @@ import {
 } from "@/redux/features/driver/driver.api";
 import isApiErrorResponse from "@/utils/errorGurd";
 import { ArrowLeft, Clock, Loader2, MapPin } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 import { scrollToTop } from "@/hooks/scroll";
 
 const statusSchema = z.object({
-  status: z.enum(["ACCEPTED", "IN_TRANSIT", "PICKED_UP", "COMPLETED"]),
+  rideStatus: z.enum(["ACCEPTED", "IN_TRANSIT", "PICKED_UP", "COMPLETED"]),
 });
 
 type StatusFormData = z.infer<typeof statusSchema>;
 
 const RideDetails = () => {
   scrollToTop();
+   const navigate = useNavigate();
   const { rideId } = useParams();
   const {
     data: rideData,
@@ -62,12 +63,15 @@ const RideDetails = () => {
   const onStatusSubmit = async (data: StatusFormData) => {
     try {
       const res = await updateRideStatus({
-        status: data.status,
+        rideStatus: data.rideStatus,
         id: rideData?.data?._id,
       }).unwrap();
       if (res.success) {
         toast.success(res.message);
         refetch();
+        if (res.data.rideStatus === "COMPLETED") {
+          navigate(`/driver/ride-status`); 
+        }
       } else {
         toast.warning(res.message);
       }
@@ -249,7 +253,7 @@ const RideDetails = () => {
                         disabled={rideData?.data.rideStatus !== "ACCEPTED"}
                         onClick={() =>
                           onStatusSubmit({
-                            status: "PICKED_UP",
+                            rideStatus: "PICKED_UP",
                           } as StatusFormData)
                         }
                       >
@@ -261,7 +265,7 @@ const RideDetails = () => {
                         disabled={rideData?.data.rideStatus !== "PICKED_UP"}
                         onClick={() =>
                           onStatusSubmit({
-                            status: "IN_TRANSIT",
+                            rideStatus: "IN_TRANSIT",
                           } as StatusFormData)
                         }
                       >
@@ -273,7 +277,7 @@ const RideDetails = () => {
                         disabled={rideData?.data.rideStatus !== "IN_TRANSIT"}
                         onClick={() =>
                           onStatusSubmit({
-                            status: "COMPLETED",
+                            rideStatus: "COMPLETED",
                           } as StatusFormData)
                         }
                       >
