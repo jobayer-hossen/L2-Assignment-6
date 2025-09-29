@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useRideRequestMutation } from "@/redux/features/ride/riders.api";
 import { scrollToTop } from "@/hooks/scroll";
 import { Loader2 } from "lucide-react";
-
+import { useNavigate } from "react-router";
 
 delete (L.Icon.Default as any).prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -63,16 +63,9 @@ function LocationPicker({
 
 export default function RideRequestForm() {
   scrollToTop();
+  const navigate = useNavigate();
   const { data } = useUserInfoQuery(undefined);
   const [rideRequest, { isLoading }] = useRideRequestMutation();
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   const {
     register,
@@ -91,20 +84,21 @@ export default function RideRequestForm() {
   const pickup = watch("pickupLocation");
   const destination = watch("destination");
 
-  const formData = watch();
-  useEffect(() => {
-    console.log("👀 Current payload:", formData);
-  }, [formData]);
-
   useEffect(() => {
     if (data?.data?._id) {
       setValue("riderId", data.data._id, { shouldValidate: true });
     }
   }, [data, setValue]);
 
-  const onSubmit = async (payload: z.infer<typeof createRideZodSchema>) => {
-    console.log("📦 Final Payload being submitted:", payload);
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
+  const onSubmit = async (payload: z.infer<typeof createRideZodSchema>) => {
     const rideRequestInfo = {
       riderId: payload.riderId,
       vehicleType: payload.vehicleType,
@@ -123,8 +117,8 @@ export default function RideRequestForm() {
     try {
       await rideRequest(rideRequestInfo).unwrap();
       toast.success("Ride request submitted successfully!");
-      reset({ riderId: payload.riderId });
       reset();
+      navigate(`/rider/history`);
     } catch (err) {
       console.error("❌ API Error:", err);
       toast.error("Failed to submit ride request.");

@@ -92,7 +92,7 @@ export default function PickARide() {
               </p>
 
               <p className="text-gray-600 dark:text-gray-300 mt-3">
-                Rider: {ride.riderId.name} ({ride.riderId.email})
+                Rider: {ride.riderId.name}
               </p>
               <p className="text-gray-600 dark:text-gray-300 mt-1">
                 Requested At:{" "}
@@ -104,47 +104,6 @@ export default function PickARide() {
             </div>
 
             <div className="flex flex-col gap-2 mt-4">
-              {/* {showCancelInput === ride._id ? (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Enter cancel reason..."
-                    value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
-                    className="w-full py-2 px-3 border rounded-md text-gray-900 dark:text-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleCancel(ride._id)}
-                      className="flex-1 py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                    >
-                      Confirm Cancel
-                    </button>
-                    <button
-                      onClick={() => setShowCancelInput(null)}
-                      className="flex-1 py-2 px-4 bg-gray-400 text-white rounded hover:bg-gray-500 transition"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => setShowCancelInput(ride._id)}
-                    className="flex-1 py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => console.log("Accept ride:", ride._id)}
-                    className="flex-1 py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                  >
-                    Accept
-                  </button>
-                </>
-              )} */}
-
               {showCancelInput === ride._id ? (
                 <>
                   <input
